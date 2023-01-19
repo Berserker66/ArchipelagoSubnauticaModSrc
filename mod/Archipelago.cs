@@ -87,6 +87,12 @@ namespace Archipelago
                 GUI.Label(new Rect(16, 56, 150, 20), "PlayerName: ");
                 GUI.Label(new Rect(16, 76, 150, 20), "Password: ");
 
+                bool submit = false;
+                if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return)
+                {
+                    submit = true;
+                }
+
                 APState.ServerData.host_name = GUI.TextField(new Rect(150 + 16 + 8, 36, 150, 20), 
                     APState.ServerData.host_name);
                 APState.ServerData.slot_name = GUI.TextField(new Rect(150 + 16 + 8, 56, 150, 20), 
@@ -94,7 +100,13 @@ namespace Archipelago
                 APState.ServerData.password = GUI.TextField(new Rect(150 + 16 + 8, 76, 150, 20), 
                     APState.ServerData.password);
 
-                if (GUI.Button(new Rect(16, 96, 100, 20), "Connect"))
+                if (submit && Event.current.type == EventType.KeyDown)
+                {
+                    // The text fields have not consumed the event, which means they were not focused.
+                    submit = false;
+                }
+
+                if ((GUI.Button(new Rect(16, 96, 100, 20), "Connect") || submit) && APState.ServerData.Valid)
                 {
                     APState.Connect();
                 }

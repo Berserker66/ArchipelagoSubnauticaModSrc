@@ -9,6 +9,11 @@ namespace Archipelago
         public string host_name;
         public string slot_name;
         public string password;
+
+        public bool Valid
+        {
+            get => host_name != "" && slot_name != "";
+        }
         
         public static APLastConnectInfo LoadFromFile(string path)
         {
