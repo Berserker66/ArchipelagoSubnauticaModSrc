@@ -412,10 +412,18 @@ namespace Archipelago
         [HarmonyPrefix]
         public static bool AlwaysSpawn(DataboxSpawner __instance, ref IEnumerator __result)
         {
-            __result = AddressablesUtility.InstantiateAsync(__instance.databoxPrefabReference.RuntimeKey as string, 
-                __instance.transform.parent, __instance.transform.localPosition, __instance.transform.localRotation);
-            Object.Destroy(__instance.gameObject);
+            __result = PatchedStart(__instance);
             return false;
+        }
+        
+        private static IEnumerator PatchedStart(DataboxSpawner __instance)
+        {
+            if (__instance.spawnTechType != 0)
+            {
+                yield return AddressablesUtility.InstantiateAsync(__instance.databoxPrefabReference.RuntimeKey as string,
+                    __instance.transform.parent, __instance.transform.localPosition, __instance.transform.localRotation);
+            }
+            Object.Destroy(__instance.gameObject);
         }
     }
 
