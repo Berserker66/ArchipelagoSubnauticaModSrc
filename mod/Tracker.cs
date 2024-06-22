@@ -286,6 +286,8 @@ namespace Archipelago
                     APState.TrackedLocation = closestID;
                     if (closestID != -1)
                     {
+                        APState.TrackedDepth =
+                            Convert.ToInt32(ArchipelagoData.Locations[closestID].Position.y);
                         APState.TrackedLocationName =
                             APState.Session.Locations.GetLocationNameFromId(APState.TrackedLocation);
                         Vector3 directionVector = ArchipelagoData.Locations[closestID].Position - 

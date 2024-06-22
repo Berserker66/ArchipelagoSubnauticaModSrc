@@ -29,7 +29,8 @@ namespace Archipelago
         public enum State
         {
             Menu,
-            InGame
+            InGame,
+            Cancelled
         }
 
         public static Dictionary<string, string> GoalMapping = new Dictionary<string, string>()
@@ -62,6 +63,7 @@ namespace Archipelago
         public static string TrackedLocationName;
         public static float TrackedDistance;
         public static float TrackedAngle;
+        public static int TrackedDepth;
         public static ManualLogSource Logger;
 
         public static ArchipelagoSession Session;
@@ -146,6 +148,7 @@ namespace Archipelago
             TechType.SingleWallShelf,
             TechType.WallShelves,
             TechType.Bench,
+            TechType.PictureFrame,
             TechType.PlanterPot,
             TechType.PlanterShelf,
             TechType.PlanterPot2,
@@ -270,8 +273,8 @@ namespace Archipelago
             TechFragmentsToDestroy = new HashSet<TechType>(APState.tech_fragments);
             // remove vanilla so it's scannable
             TechFragmentsToDestroy.ExceptWith(vanillaTech);
-            Debug.LogError("Preventing scanning of: " + string.Join(", ", TechFragmentsToDestroy));
-            Debug.LogError("Allowing scanning of: " + string.Join(", ", vanillaTech));
+            Debug.Log("Preventing scanning of: " + string.Join(", ", TechFragmentsToDestroy));
+            Debug.Log("Allowing scanning of: " + string.Join(", ", vanillaTech));
             return loginResult.Successful;
         }
         

@@ -95,7 +95,7 @@ public static class ArchipelagoData
             }
         }
 
-        Debug.LogError("ItemCodeToItemType " + JsonConvert.SerializeObject(ItemCodeToItemType));
+        Debug.Log("ItemCodeToItemType " + JsonConvert.SerializeObject(ItemCodeToItemType));
         Initialized = true;
     }
 }

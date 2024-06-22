@@ -72,6 +72,12 @@ namespace Archipelago
 #if DEBUG
             GUI.Box(new Rect(0, 0, Screen.width, 120), "");
 #endif
+
+            if (APState.state == APState.State.Cancelled)
+            {
+                return;
+            }
+
             string ap_ver = "Archipelago v" + APState.AP_VERSION[0] + "." + APState.AP_VERSION[1] + "." + APState.AP_VERSION[2];
             if (APState.Session != null)
             {
@@ -91,17 +97,17 @@ namespace Archipelago
 
             if ((APState.Session == null || !APState.Authenticated) && APState.state == APState.State.Menu)
             {
-                GUI.Label(new Rect(16, 36, 150, 20), "Host: ");
-                GUI.Label(new Rect(16, 56, 150, 20), "PlayerName: ");
-                GUI.Label(new Rect(16, 76, 150, 20), "Password: ");
+                GUI.Label(new Rect(16, 36, 100, 20), "Host: ");
+                GUI.Label(new Rect(16, 56, 100, 20), "PlayerName: ");
+                GUI.Label(new Rect(16, 76, 100, 20), "Password: ");
 
                 bool submit = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
 
-                APState.ServerConnectInfo.host_name = GUI.TextField(new Rect(150 + 16 + 8, 36, 150, 20), 
+                APState.ServerConnectInfo.host_name = GUI.TextField(new Rect(100 + 16 + 8, 36, 150, 20),
                     APState.ServerConnectInfo.host_name);
-                APState.ServerConnectInfo.slot_name = GUI.TextField(new Rect(150 + 16 + 8, 56, 150, 20), 
+                APState.ServerConnectInfo.slot_name = GUI.TextField(new Rect(100 + 16 + 8, 56, 150, 20),
                     APState.ServerConnectInfo.slot_name);
-                APState.ServerConnectInfo.password = GUI.TextField(new Rect(150 + 16 + 8, 76, 150, 20), 
+                APState.ServerConnectInfo.password = GUI.TextField(new Rect(100 + 16 + 8, 76, 150, 20),
                     APState.ServerConnectInfo.password);
 
                 if (submit && Event.current.type == EventType.KeyDown)
@@ -110,7 +116,12 @@ namespace Archipelago
                     submit = false;
                 }
 
-                if ((GUI.Button(new Rect(16, 96, 100, 20), "Connect") || submit) && APState.ServerConnectInfo.Valid)
+                if (GUI.Button(new Rect(16, 96, 100, 20), "Cancel"))
+                {
+                    APState.state = APState.State.Cancelled;
+                    return;
+                }
+                if ((GUI.Button(new Rect(136, 96, 100, 20), "Connect") || submit) && APState.ServerConnectInfo.Valid)
                 {
                     APState.Connect();
                 }
@@ -118,7 +129,7 @@ namespace Archipelago
             else if (APState.state == APState.State.InGame && APState.Session != null && Player.main != null)
             {
                 
-                if (APState.TrackedLocation != -1 && APState.TrackedMode != TrackerMode.Disabled)
+                if (APState.TrackedMode != TrackerMode.Disabled)
                 {
                     string text = "Locations left: " + APState.TrackedLocationsCount;
                     if (APState.TrackedLocation != -1)
@@ -126,31 +137,35 @@ namespace Archipelago
                         text += ". Closest is " + (long)APState.TrackedDistance + " m (" 
                                 + (int)APState.TrackedAngle + "°) away";
                         text += ", named " + APState.TrackedLocationName;
+                        text += " (" + APState.TrackedDepth + "m)";
                     }
                     
                     GUI.Label(new Rect(16, 36, 1000, 20), text);
                 }
 
+                int showing_fish = 0;
                 if (APState.TrackedFishCount > 0 && APState.TrackedMode != TrackerMode.Disabled)
                 {
+                    showing_fish = 1;
                     GUI.Label(new Rect(16, 56, 1000, 22), 
                         "Fish left: "+APState.TrackedFishCount + ". Such as: "+APState.TrackedFish);
                 }
                 
                 if (PlayerNearStart())
                 {
-                    GUI.Label(new Rect(16, 76, 1000, 22), 
+                    int y_pos = 56 + (showing_fish * 20);
+                    GUI.Label(new Rect(16, y_pos, 1000, 22),
                         "Goal: "+APState.Goal);
                     if (APState.SwimRule.Length == 0)
                     {
-                        GUI.Label(new Rect(16, 96, 1000, 22), 
+                        GUI.Label(new Rect(16, y_pos + 20, 1000, 22),
                             "No Swim Rule sent by Server. Assuming items_hard." + 
                             " Current Logical Depth: " + (TrackerThread.LogicSwimDepth + 
                                                           TrackerThread.LogicVehicleDepth));
                     }
                     else
                     {
-                        GUI.Label(new Rect(16, 96, 1000, 22), 
+                        GUI.Label(new Rect(16, y_pos + 20, 1000, 22),
                             "Swim Rule: "+APState.SwimRule +
                             " Current Logical Depth: " + (TrackerThread.LogicSwimDepth + 
                                                           TrackerThread.LogicVehicleDepth) + 
@@ -236,6 +251,11 @@ namespace Archipelago
 
         public bool PlayerNearStart()
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return false;
+            }
+
             if (ArchipelagoPlugin.Zero)
             {
                 return true;
@@ -257,6 +277,10 @@ namespace Archipelago
         
         private void Start()
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
             RegisterCmds();
         }
 
@@ -400,6 +424,10 @@ namespace Archipelago
         [HarmonyPostfix]
         public static void RemoveFragment(ResourceTracker __instance, TechType ___techType)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
 
             if (___techType == TechType.Fragment)
             {
@@ -430,6 +458,11 @@ namespace Archipelago
         [HarmonyPostfix]
         public static void MakeUnscanable()
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
+
             if (PDAScanner.scanTarget.gameObject)
             {
                 var tech_tag = PDAScanner.scanTarget.gameObject.GetComponent<TechTag>();
@@ -452,6 +485,11 @@ namespace Archipelago
         [HarmonyPrefix] 
         public static void ReplaceDataboxContent(BlueprintHandTarget __instance)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
+
             // needs to be a unique not taken ID
             __instance.unlockTechType = (TechType)__instance.transform.position.x+100000;
         }
@@ -465,6 +503,11 @@ namespace Archipelago
         [HarmonyPrefix]
         public static bool AlwaysSpawn(DataboxSpawner __instance, ref IEnumerator __result)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return true;
+            }
+
             __result = PatchedStart(__instance);
             return false;
         }
@@ -488,6 +531,11 @@ namespace Archipelago
         [HarmonyPrefix]
         public static void OpenDatabox(BlueprintHandTarget __instance)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
+
             if (!__instance.used)
             {
                 APState.CheckLocation(__instance.gameObject.transform.position);
@@ -503,6 +551,11 @@ namespace Archipelago
         [HarmonyPrefix]
         public static bool Interact(StoryHandTarget __instance)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return true;
+            }
+
             APState.CheckLocation(__instance.gameObject.transform.position);
 
             var generic_console = __instance.gameObject.GetComponent<GenericConsole>();
@@ -529,6 +582,11 @@ namespace Archipelago
         [HarmonyPrefix]
         public static bool PickModule(Pickupable __instance)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return true;
+            }
+
             if (APState.CheckLocation(__instance.gameObject.transform.position))
             {
                 var tech_tag = __instance.gameObject.GetComponent<TechTag>();
@@ -571,6 +629,11 @@ namespace Archipelago
         [HarmonyPostfix]
         public static void GameReady()
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
+
             // Make sure the commands are registered
             APState.ArchipelagoUI.RegisterCmds();
         }
@@ -626,6 +689,11 @@ namespace Archipelago
         [HarmonyPostfix]
         public static void SaveIntoCurrentSlot(SaveLoadManager.GameInfo info)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
+
             var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(APState.ServerConnectInfo));
             Platform.IO.File.WriteAllBytes(Platform.IO.Path.Combine(SaveLoadManager.GetTemporarySavePath(), 
                 "archipelago.json"), bytes);
@@ -870,6 +938,11 @@ namespace Archipelago
         [HarmonyPrefix]
         public static bool PreventStoryUnlock(Story.UnlockBlueprintData __instance)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return true;
+            }
+
             switch (__instance.techType)
             {
                 case TechType.RadiationSuit:
@@ -888,6 +961,10 @@ namespace Archipelago
     {
         public static void Add(string key, PDAEncyclopedia.Entry entry)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
             if (ArchipelagoData.Encyclopdia.TryGetValue(key, out var id))
             {
                 APState.SendLocID(id);
@@ -901,6 +978,10 @@ namespace Archipelago
         [HarmonyPostfix]
         public static void PlayerDeath(DamageType damageType)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
             if (!APState.DeathLinkKilling)
             {
                 if (APState.ServerConnectInfo.death_link)
@@ -919,6 +1000,10 @@ namespace Archipelago
         [HarmonyPostfix]
         public static void GameReady(EscapePod __instance)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
             DevConsole.SendConsoleCommand("explodeship");
             APState.ServerConnectInfo.index = 0; // New game detected
         }
@@ -930,6 +1015,11 @@ namespace Archipelago
         [HarmonyPrefix]
         public static bool AdvanceRocketStage(Rocket __instance)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return true;
+            }
+
             __instance.currentRocketStage++;
             if (__instance.currentRocketStage == 5)
             {
@@ -950,6 +1040,11 @@ namespace Archipelago
         [HarmonyPrefix]
         public static bool StartRocketConstruction(RocketConstructor __instance)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return true;
+            }
+
             TechType currentStageTech = __instance.rocket.GetCurrentStageTech();
             if (!KnownTech.Contains(currentStageTech))
             {
@@ -965,6 +1060,11 @@ namespace Archipelago
         [HarmonyPrefix]
         public static bool SetLaunchStarted()
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return true;
+            }
+
             APState.send_completion();
             return true;
         }
@@ -977,6 +1077,11 @@ namespace Archipelago
         [HarmonyPrefix]
         public static void NotifyGoalComplete(string key)
         {
+            if (APState.state != APState.State.InGame)
+            {
+                return;
+            }
+
             if (key == APState.GoalEvent)
             {
                 APState.send_completion();
