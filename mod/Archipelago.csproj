@@ -35,6 +35,9 @@
     <Reference Include="Unity.Addressables">
       <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\Unity.Addressables.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
