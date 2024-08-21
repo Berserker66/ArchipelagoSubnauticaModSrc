@@ -19,60 +19,60 @@ namespace Archipelago
 {
     public class ArchipelagoUI : MonoBehaviour
     {
-#if DEBUG
-        public static string mouse_target_desc = "";
-        private bool show_warps = false;
-        private bool show_items = false;
-        private float copied_fade = 0.0f;
+        /*#if DEBUG
+                public static string mouse_target_desc = "";
+                private bool show_warps = false;
+                private bool show_items = false;
+                private float copied_fade = 0.0f;
 
-        public static Dictionary<string, Vector3> WRECKS = new Dictionary<string, Vector3>
-        {
-            { "Blood Kelp Trench 1", new Vector3(-1201, -324, -396) },
-            { "Bulb Zone 1", new Vector3(929, -198, 593) },
-            { "Bulb Zone 2", new Vector3(1309, -215, 570) },
-            { "Dunes 1", new Vector3(-1448, -332, 723) },
-            { "Dunes 2", new Vector3(-1632, -334, 83) },
-            { "Dunes 3", new Vector3(-1210, -217, 7) },
-            { "Grand Reef 1", new Vector3(-290, -222, -773) },
-            { "Grand Reef 2", new Vector3(-865, -430, -1390) },
-            { "Grassy Plateaus 1", new Vector3(-15, -96, -624) },
-            { "Grassy Plateaus 2", new Vector3(-390, -120, 648) },
-            { "Grassy Plateaus 3", new Vector3(286, -72, 444) },
-            { "Grassy Plateaus 4", new Vector3(-635, -50, -2) },
-            { "Grassy Plateaus 5", new Vector3(-432, -90, -268) },
-            { "Kelp Forest 1", new Vector3(-320, -57, 252) },
-            { "Kelp Forest 2", new Vector3(65, -25, 385) },
-            { "Mountains 1", new Vector3(701, -346, 1224) },
-            { "Mountains 2", new Vector3(1057, -254, 1359) },
-            { "Northwestern Mushroom Forest", new Vector3(-645, -120, 773) },
-            { "Safe Shallows 1", new Vector3(-40, -14, -400) },
-            { "Safe Shallows 2", new Vector3(366, -6, -203) },
-            { "Sea Treader's Path", new Vector3(-1131, -166, -729) },
-            { "Sparse Reef", new Vector3(-787, -208, -713) },
-            { "Underwater Islands", new Vector3(-102, -179, 860) }
-        };
-        void Update()
-        {
-            if (mouse_target_desc != "")
-            {
-                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.C))
+                public static Dictionary<string, Vector3> WRECKS = new Dictionary<string, Vector3>
                 {
-                    Logging.Log("INSPECT GAME OBJECT: " + mouse_target_desc, ingame:false);
-                    string id = mouse_target_desc.Split(new char[] { ':' })[0];
-                    GUIUtility.systemCopyBuffer = id;
-                    copied_fade = 1.0f;
+                    { "Blood Kelp Trench 1", new Vector3(-1201, -324, -396) },
+                    { "Bulb Zone 1", new Vector3(929, -198, 593) },
+                    { "Bulb Zone 2", new Vector3(1309, -215, 570) },
+                    { "Dunes 1", new Vector3(-1448, -332, 723) },
+                    { "Dunes 2", new Vector3(-1632, -334, 83) },
+                    { "Dunes 3", new Vector3(-1210, -217, 7) },
+                    { "Grand Reef 1", new Vector3(-290, -222, -773) },
+                    { "Grand Reef 2", new Vector3(-865, -430, -1390) },
+                    { "Grassy Plateaus 1", new Vector3(-15, -96, -624) },
+                    { "Grassy Plateaus 2", new Vector3(-390, -120, 648) },
+                    { "Grassy Plateaus 3", new Vector3(286, -72, 444) },
+                    { "Grassy Plateaus 4", new Vector3(-635, -50, -2) },
+                    { "Grassy Plateaus 5", new Vector3(-432, -90, -268) },
+                    { "Kelp Forest 1", new Vector3(-320, -57, 252) },
+                    { "Kelp Forest 2", new Vector3(65, -25, 385) },
+                    { "Mountains 1", new Vector3(701, -346, 1224) },
+                    { "Mountains 2", new Vector3(1057, -254, 1359) },
+                    { "Northwestern Mushroom Forest", new Vector3(-645, -120, 773) },
+                    { "Safe Shallows 1", new Vector3(-40, -14, -400) },
+                    { "Safe Shallows 2", new Vector3(366, -6, -203) },
+                    { "Sea Treader's Path", new Vector3(-1131, -166, -729) },
+                    { "Sparse Reef", new Vector3(-787, -208, -713) },
+                    { "Underwater Islands", new Vector3(-102, -179, 860) }
+                };
+                void Update()
+                {
+                    if (mouse_target_desc != "")
+                    {
+                        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.C))
+                        {
+                            Logging.Log("INSPECT GAME OBJECT: " + mouse_target_desc, ingame:false);
+                            string id = mouse_target_desc.Split(new char[] { ':' })[0];
+                            GUIUtility.systemCopyBuffer = id;
+                            copied_fade = 1.0f;
+                        }
+                    }
+                    copied_fade -= Time.deltaTime;
                 }
-            }
-            copied_fade -= Time.deltaTime;
-        }
-#endif
+        #endif*/
 
         void OnGUI()
         {
             Logging.TryUpdateLog();
-#if DEBUG
-            GUI.Box(new Rect(0, 0, Screen.width, 120), "");
-#endif
+/*#if DEBUG
+            GUI.Box(new Rect(0, 0, Screen.width, 140), "");
+#endif*/
             string ap_ver = "Archipelago v" + APState.AP_VERSION[0] + "." + APState.AP_VERSION[1] + "." + APState.AP_VERSION[2];
             if (APState.Session != null)
             {
@@ -98,11 +98,11 @@ namespace Archipelago
 
                 bool submit = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
 
-                APState.ServerConnectInfo.host_name = GUI.TextField(new Rect(150 + 16 + 8, 36, 150, 20), 
+                APState.ServerConnectInfo.host_name = GUI.TextField(new Rect(150 + 16 + 8, 36, 150, 20),
                     APState.ServerConnectInfo.host_name);
-                APState.ServerConnectInfo.slot_name = GUI.TextField(new Rect(150 + 16 + 8, 56, 150, 20), 
+                APState.ServerConnectInfo.slot_name = GUI.TextField(new Rect(150 + 16 + 8, 56, 150, 20),
                     APState.ServerConnectInfo.slot_name);
-                APState.ServerConnectInfo.password = GUI.TextField(new Rect(150 + 16 + 8, 76, 150, 20), 
+                APState.ServerConnectInfo.password = GUI.TextField(new Rect(150 + 16 + 8, 76, 150, 20),
                     APState.ServerConnectInfo.password);
 
                 if (submit && Event.current.type == EventType.KeyDown)
@@ -118,121 +118,123 @@ namespace Archipelago
             }
             else if (APState.state == APState.State.InGame && APState.Session != null && Player.main != null)
             {
-                
+
                 if (APState.TrackedLocation != -1 && APState.TrackedMode != TrackerMode.Disabled)
                 {
                     string text = "Locations left: " + APState.TrackedLocationsCount;
                     if (APState.TrackedLocation != -1)
                     {
-                        text += ". Closest is " + (long)APState.TrackedDistance + " m (" 
+                        text += ". Closest is " + (long)APState.TrackedDistance + " m ("
                                 + (int)APState.TrackedAngle + "°) away";
                         text += ", named " + APState.TrackedLocationName;
                     }
-                    
+
                     GUI.Label(new Rect(16, 36, 1000, 20), text);
                 }
 
                 if (APState.TrackedFishCount > 0 && APState.TrackedMode != TrackerMode.Disabled)
                 {
-                    GUI.Label(new Rect(16, 56, 1000, 22), 
-                        "Fish left: "+APState.TrackedFishCount + ". Such as: "+APState.TrackedFish);
+                    GUI.Label(new Rect(16, 56, 1000, 22),
+                        "Fish left: " + APState.TrackedFishCount + ". Such as: " + APState.TrackedFish);
                 }
-                
+
                 if (PlayerNearStart())
                 {
-                    GUI.Label(new Rect(16, 76, 1000, 22), 
-                        "Goal: "+APState.Goal);
+                    GUI.Label(new Rect(16, 76, 1000, 22),
+                        "Goal: " + APState.Goal);
                     if (APState.SwimRule.Length == 0)
                     {
-                        GUI.Label(new Rect(16, 96, 1000, 22), 
-                            "No Swim Rule sent by Server. Assuming items_hard." + 
-                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth + 
+                        GUI.Label(new Rect(16, 96, 1000, 22),
+                            "No Swim Rule sent by Server. Assuming items_hard." +
+                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth +
                                                           TrackerThread.LogicVehicleDepth));
                     }
                     else
                     {
-                        GUI.Label(new Rect(16, 96, 1000, 22), 
-                            "Swim Rule: "+APState.SwimRule +
-                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth + 
-                                                          TrackerThread.LogicVehicleDepth) + 
-                            " = " + TrackerThread.LogicSwimDepth + " (Swim) + " + TrackerThread.LogicVehicleDepth + 
+                        GUI.Label(new Rect(16, 96, 1000, 22),
+                            "Swim Rule: " + APState.SwimRule +
+                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth +
+                                                          TrackerThread.LogicVehicleDepth) +
+                            " = " + TrackerThread.LogicSwimDepth + " (Swim) + " + TrackerThread.LogicVehicleDepth +
                             " (" + TrackerThread.LogicVehicle + ")");
                     }
+                    GUI.Label(new Rect(16, 116, 1000, 22),
+                        "Propulsion Cannon Logic: " + APState.PropulsionCannonLogic);
                 }
                 if (!APState.TrackerProcessing.IsAlive)
                 {
-                    GUI.Label(new Rect(16, 116, 1000, 22), 
+                    GUI.Label(new Rect(16, 136, 1000, 22),
                         "Error: Tracker Thread died. Tracker will not update.");
                 }
             }
 
-#if DEBUG
-            GUI.Label(new Rect(16, 16 + 20, Screen.width - 32, 50), ((copied_fade > 0.0f) ? "Copied!" : "Target: ") + mouse_target_desc);
+            /*#if DEBUG
+                        GUI.Label(new Rect(16, 16 + 20, Screen.width - 32, 50), ((copied_fade > 0.0f) ? "Copied!" : "Target: ") + mouse_target_desc);
 
-            if (APState.state != APState.State.Menu)
-            {
-                if (GUI.Button(new Rect(16, 16 + 25 + 8 + 25 + 8, 150, 25), "Activate Cheats"))
-                {
-                    DevConsole.SendConsoleCommand("nodamage");
-                    DevConsole.SendConsoleCommand("oxygen");
-                    DevConsole.SendConsoleCommand("item seaglide");
-                    DevConsole.SendConsoleCommand("item battery 10");
-                    DevConsole.SendConsoleCommand("fog");
-                    DevConsole.SendConsoleCommand("speed 3");
-                }
-                if (GUI.Button(new Rect(16 + 150 + 8, 16 + 25 + 8 + 25 + 8, 150, 25), "Warp to Locations"))
-                {
-                    show_warps = !show_warps;
-                    if (show_warps) show_items = false;
-                }
-                if (GUI.Button(new Rect(16 + 150 + 8 + 150 + 8, 16 + 25 + 8 + 25 + 8, 150, 25), "Items"))
-                {
-                    show_items = !show_items;
-                    if (show_items) show_warps = false;
-                }
+                        if (APState.state != APState.State.Menu)
+                        {
+                            if (GUI.Button(new Rect(16, 16 + 25 + 8 + 25 + 8, 150, 25), "Activate Cheats"))
+                            {
+                                DevConsole.SendConsoleCommand("nodamage");
+                                DevConsole.SendConsoleCommand("oxygen");
+                                DevConsole.SendConsoleCommand("item seaglide");
+                                DevConsole.SendConsoleCommand("item battery 10");
+                                DevConsole.SendConsoleCommand("fog");
+                                DevConsole.SendConsoleCommand("speed 3");
+                            }
+                            if (GUI.Button(new Rect(16 + 150 + 8, 16 + 25 + 8 + 25 + 8, 150, 25), "Warp to Locations"))
+                            {
+                                show_warps = !show_warps;
+                                if (show_warps) show_items = false;
+                            }
+                            if (GUI.Button(new Rect(16 + 150 + 8 + 150 + 8, 16 + 25 + 8 + 25 + 8, 150, 25), "Items"))
+                            {
+                                show_items = !show_items;
+                                if (show_items) show_warps = false;
+                            }
 
-                if (show_warps)
-                {
-                    int i = 0;
-                    int j = 125;
-                    foreach (var kv in WRECKS)
-                    {
-                        if (GUI.Button(new Rect(16 + i, j, 200, 25), kv.Key.ToString()))
-                        {
-                            string target = ((int)kv.Value.x).ToString() + " " +
-                                            ((int)kv.Value.y).ToString() + " " +
-                                            ((int)kv.Value.z + 50).ToString();
-                            DevConsole.SendConsoleCommand("warp " + target);
-                        }
-                        j += 30;
-                        if (j + 30 >= Screen.height)
-                        {
-                            j = 125;
-                            i += 200 + 16;
-                        }
-                    }
-                }
+                            if (show_warps)
+                            {
+                                int i = 0;
+                                int j = 125;
+                                foreach (var kv in WRECKS)
+                                {
+                                    if (GUI.Button(new Rect(16 + i, j, 200, 25), kv.Key.ToString()))
+                                    {
+                                        string target = ((int)kv.Value.x).ToString() + " " +
+                                                        ((int)kv.Value.y).ToString() + " " +
+                                                        ((int)kv.Value.z + 50).ToString();
+                                        DevConsole.SendConsoleCommand("warp " + target);
+                                    }
+                                    j += 30;
+                                    if (j + 30 >= Screen.height)
+                                    {
+                                        j = 125;
+                                        i += 200 + 16;
+                                    }
+                                }
+                            }
 
-                if (show_items)
-                {
-                    int i = 0;
-                    int j = 125;
-                    foreach (var kv in APState.ITEM_CODE_TO_TECHTYPE)
-                    {
-                        if (GUI.Button(new Rect(16 + i, j, 200, 25), kv.Value.ToString()))
-                        {
-                            APState.unlock(kv.Value);
+                            if (show_items)
+                            {
+                                int i = 0;
+                                int j = 125;
+                                foreach (var kv in APState.ITEM_CODE_TO_TECHTYPE)
+                                {
+                                    if (GUI.Button(new Rect(16 + i, j, 200, 25), kv.Value.ToString()))
+                                    {
+                                        APState.unlock(kv.Value);
+                                    }
+                                    j += 30;
+                                    if (j + 30 >= Screen.height)
+                                    {
+                                        j = 125;
+                                        i += 200 + 16;
+                                    }
+                                }
+                            }
                         }
-                        j += 30;
-                        if (j + 30 >= Screen.height)
-                        {
-                            j = 125;
-                            i += 200 + 16;
-                        }
-                    }
-                }
-            }
-#endif
+            #endif*/
         }
 
         public bool PlayerNearStart()
@@ -255,7 +257,7 @@ namespace Archipelago
             }
             return (podTransform.position - Player.main.transform.position).magnitude < 10f;
         }
-        
+
         private void Start()
         {
             RegisterCmds();
@@ -297,7 +299,7 @@ namespace Archipelago
                 text += (string)n.data[i];
                 if (i < n.data.Count - 1) text += " ";
             }
-            
+
             if (APState.Session != null && APState.Authenticated)
             {
                 var packet = new SayPacket();
@@ -312,7 +314,7 @@ namespace Archipelago
         private void OnConsoleCommand_silent(NotificationCenter.Notification n)
         {
             APState.Silent = !APState.Silent;
-            
+
             if (APState.Silent)
             {
                 Logging.Log("Muted Archipelago chat.");
@@ -345,7 +347,7 @@ namespace Archipelago
         {
             APState.ServerConnectInfo.death_link = !APState.ServerConnectInfo.death_link;
             APState.set_deathlink();
-            
+
             if (APState.ServerConnectInfo.death_link)
             {
                 Logging.Log("Enabled DeathLink.");
@@ -355,7 +357,7 @@ namespace Archipelago
                 Logging.Log("Disabled DeathLink.");
             }
         }
-        
+
         private void OnConsoleCommand_resync(NotificationCenter.Notification n)
         {
             if (APState.state == APState.State.InGame)
@@ -369,13 +371,13 @@ namespace Archipelago
                 Logging.Log("Cannot resync in menu.");
             }
         }
-        
+
         private void OnConsoleCommand_apdebug(NotificationCenter.Notification n)
         {
             //var loc = APState.TrackedLocation;
             //var loc_data = APState.LOCATIONS[loc];
             //DevConsole.SendConsoleCommand("warp "+(int)loc_data.Position.x+" "+(int)loc_data.Position.y+" "+(int)loc_data.Position.z);
-            
+
             //Debug.LogError("Analysis:");
             //string json = JsonConvert.SerializeObject(Player.main.pdaData.analysisTech);
             //Debug.LogError(json);
@@ -439,11 +441,11 @@ namespace Archipelago
     internal class BlueprintHandTarget_Start_Patch
     {
         // Using TechType.None gives 2 titanium we don't want that
-        [HarmonyPrefix] 
+        [HarmonyPrefix]
         public static void ReplaceDataboxContent(BlueprintHandTarget __instance)
         {
             // needs to be a unique not taken ID
-            __instance.unlockTechType = (TechType)__instance.transform.position.x+100000;
+            __instance.unlockTechType = (TechType)__instance.transform.position.x + 100000;
         }
     }
 
@@ -451,14 +453,14 @@ namespace Archipelago
     [HarmonyPatch("Start")]
     internal class DataboxSpawner_Start_Patch
     {
-        
+
         [HarmonyPrefix]
         public static bool AlwaysSpawn(DataboxSpawner __instance, ref IEnumerator __result)
         {
             __result = PatchedStart(__instance);
             return false;
         }
-        
+
         private static IEnumerator PatchedStart(DataboxSpawner __instance)
         {
             if (__instance.spawnTechType != 0)
@@ -547,13 +549,13 @@ namespace Archipelago
         public static void PrintCascade(List<KnownTech.AnalysisTech> ___analysisTech)
         {
             foreach (KnownTech.AnalysisTech tech in ___analysisTech)
-            { 
+            {
                 Debug.LogError(tech.techType + " -> " + JsonConvert.SerializeObject(tech.unlockTechTypes));
             }
         }
     }
 #endif
-    
+
     [HarmonyPatch(typeof(MainGameController))]
     [HarmonyPatch("LoadInitialInventoryAsync")]
     internal class MainGameController_LoadInitialInventoryAsync_Patch
@@ -580,7 +582,7 @@ namespace Archipelago
             return true;
         }
     }*/
-    
+
     [HarmonyPatch(typeof(UserStoragePC), "InitializeAsyncImpl")]
     internal class PlatformInitPatch
     {
@@ -588,7 +590,7 @@ namespace Archipelago
         [HarmonyPrefix]
         public static void InitializeOverride(object owner, object state)
         {
-            
+
             var storage = owner as UserStoragePC;
             var rawPath = storage.GetType().GetField("savePath",
                 BindingFlags.NonPublic | BindingFlags.Instance).GetValue(storage) as string;
@@ -608,7 +610,7 @@ namespace Archipelago
             }
         }
     }
-    
+
     [HarmonyPatch(typeof(SaveLoadManager.GameInfo))]
     [HarmonyPatch("SaveIntoCurrentSlot")]
     internal class GameInfo_SaveIntoCurrentSlot_Patch
@@ -617,11 +619,11 @@ namespace Archipelago
         public static void SaveIntoCurrentSlot(SaveLoadManager.GameInfo info)
         {
             var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(APState.ServerConnectInfo));
-            Platform.IO.File.WriteAllBytes(Platform.IO.Path.Combine(SaveLoadManager.GetTemporarySavePath(), 
+            Platform.IO.File.WriteAllBytes(Platform.IO.Path.Combine(SaveLoadManager.GetTemporarySavePath(),
                 "archipelago.json"), bytes);
         }
     }
-    
+
     [HarmonyPatch(typeof(SaveLoadManager))]
     [HarmonyPatch("SetCurrentSlot")]
     internal class SaveLoadManager_SetCurrentSlot_Patch
@@ -701,7 +703,7 @@ namespace Archipelago
                     }
                     catch (Exception e)
                     {
-                        Logging.LogError("archipelago_item_index error: " + e.Message, ingame:false);
+                        Logging.LogError("archipelago_item_index error: " + e.Message, ingame: false);
                     }
                 }
             }
@@ -817,24 +819,24 @@ namespace Archipelago
         }
     }
 
-#if DEBUG
-    [HarmonyPatch(typeof(GUIHand))]
-    [HarmonyPatch("OnUpdate")]
-    internal class GUIHand_OnUpdate_Patch
-    {
-        [HarmonyPostfix]
-        public static void OnUpdate(GUIHand __instance)
+    /*#if DEBUG
+        [HarmonyPatch(typeof(GUIHand))]
+        [HarmonyPatch("OnUpdate")]
+        internal class GUIHand_OnUpdate_Patch
         {
-            var active_target = __instance.GetActiveTarget();
-            if (active_target)
-                ArchipelagoUI.mouse_target_desc = APState.InspectGameObject(active_target.gameObject);
-            else if (PDAScanner.scanTarget.gameObject)
-                ArchipelagoUI.mouse_target_desc = APState.InspectGameObject(PDAScanner.scanTarget.gameObject);
-            else
-                ArchipelagoUI.mouse_target_desc = "";
+            [HarmonyPostfix]
+            public static void OnUpdate(GUIHand __instance)
+            {
+                var active_target = __instance.GetActiveTarget();
+                if (active_target)
+                    ArchipelagoUI.mouse_target_desc = APState.InspectGameObject(active_target.gameObject);
+                else if (PDAScanner.scanTarget.gameObject)
+                    ArchipelagoUI.mouse_target_desc = APState.InspectGameObject(PDAScanner.scanTarget.gameObject);
+                else
+                    ArchipelagoUI.mouse_target_desc = "";
+            }
         }
-    }
-#endif
+    #endif*/
 
     //[HarmonyPatch(typeof(LeakingRadiation))]
     //[HarmonyPatch("Start")]
@@ -848,7 +850,7 @@ namespace Archipelago
     //}
 
 
-    
+
     [HarmonyPatch(typeof(Story.UnlockBlueprintData))]
     [HarmonyPatch("Trigger")]
     internal class UnlockBlueprintData_Trigger_Patch
@@ -897,7 +899,7 @@ namespace Archipelago
             APState.DeathLinkKilling = false;
         }
     }
-    
+
     // Subnautica specific hooks
     // Ship start already exploded
     internal class EscapePod_StopIntroCinematic_Patch
@@ -930,7 +932,7 @@ namespace Archipelago
             return false;
         }
     }
-    
+
     internal class RocketConstructor_StartRocketConstruction_Patch
     {
         [HarmonyPrefix]
@@ -955,7 +957,7 @@ namespace Archipelago
             return true;
         }
     }
-    
+
     [HarmonyPatch(typeof(StoryGoalCustomEventHandler))]
     [HarmonyPatch("NotifyGoalComplete")]
     internal class StoryGoalCustomEventHandler_NotifyGoalComplete_Patch
@@ -967,6 +969,15 @@ namespace Archipelago
             {
                 APState.send_completion();
             }
+        }
+    }
+
+    internal class Player_Start_Patch
+    {
+        [HarmonyPostfix]
+        public static void Awake(Player __instance)
+        {
+            APSpawnHandler.AddHandlerAndSpawnBarriers();
         }
     }
 }

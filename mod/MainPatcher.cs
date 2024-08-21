@@ -15,6 +15,7 @@ namespace Archipelago
         public static bool Zero;
         // Early Reflection to not fish for things later:
         public static Type SubnauticaEscapePod;
+        public static readonly BindingFlags all;
 
         private void Awake()
         {
@@ -65,6 +66,8 @@ namespace Archipelago
                 prefix: new HarmonyMethod(typeof(RocketConstructor_StartRocketConstruction_Patch).GetMethod("StartRocketConstruction")));
             harmony.Patch(typeof(LaunchRocket).GetMethod("SetLaunchStarted", BindingFlags.NonPublic | BindingFlags.Static),
                 prefix: new HarmonyMethod(typeof(LaunchRocket_SetLaunchStarted_Patch).GetMethod("SetLaunchStarted")));
+            harmony.Patch(typeof(Player).GetMethod("Awake"),
+                postfix: new HarmonyMethod(typeof(Player_Start_Patch).GetMethod("Awake")));
         }
     }
 }
