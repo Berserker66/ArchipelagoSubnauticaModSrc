@@ -123,10 +123,6 @@ public static class ArchipelagoData
                     }
                 }
             }
-            foreach (var logicloc in LogicDict[TechType.PropulsionCannon])
-            {
-                Logging.Log(logicloc.ToString());
-            }
         }
     }
 
