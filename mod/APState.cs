@@ -266,7 +266,10 @@ namespace Archipelago
                 //Check if player has a Spawn Handler component yet; if not, attach one
                 //Then attempt to spawn obstacles
                 //Note: this only fires if player connects while already in-world.
-                APSpawnHandler.AddHandlerAndSpawnBarriers();
+                APSpawnHandler.CheckConditionsForSpawn();
+
+                //Depending on player settings, update location logic
+                ArchipelagoData.UpdateLogicData();
 
             }
             else if (loginResult is LoginFailure loginFailure)

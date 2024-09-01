@@ -98,4 +98,40 @@ public static class ArchipelagoData
         Debug.LogError("ItemCodeToItemType " + JsonConvert.SerializeObject(ItemCodeToItemType));
         Initialized = true;
     }
+
+    //Alters the location data stored in LogicDict to conform to selected choices
+    public static void UpdateLogicData()
+    {
+        if (APState.PropulsionCannonLogic == "no_requirement")
+        {
+            var LogicPatch = ReadJSON<Dictionary<int, List<long>>>("logic_revisions");
+            foreach (var logic_change in LogicPatch)
+            {
+                //Logic patches 1 and 2 remove propulsion cannon requirement from a location
+                if (logic_change.Key == 1 || logic_change.Key == 2) {
+                    foreach (var loc in logic_change.Value)
+                    {
+                        ArchipelagoData.LogicDict[TechType.PropulsionCannon].Remove(loc);
+                    }
+                }
+                //Logic patch 2 also adds laser cutter requirement
+                if (logic_change.Key == 2)
+                {
+                    foreach (var loc in logic_change.Value)
+                    {
+                        ArchipelagoData.LogicDict[TechType.LaserCutter].Add(loc);
+                    }
+                }
+            }
+            foreach (var logicloc in LogicDict[TechType.PropulsionCannon])
+            {
+                Logging.Log(logicloc.ToString());
+            }
+        }
+    }
+
+    public static void ChangeLogicEntry()
+    {
+ 
+    }
 }

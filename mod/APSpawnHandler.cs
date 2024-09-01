@@ -19,65 +19,66 @@ namespace Archipelago
     //This class handles features that involve spawning in objects to alter progression.
     public class APSpawnHandler : MonoBehaviour
     {
-        public List<GameObject> AuroraBlockers = new List<GameObject>();
         public bool SpawnsComplete = false;
 
-        //Add a handler to the Player object if not present, then spawn necessary items
-        //Will only do so if a Player object has been instantiated and a valid AP connection is present
-        public static void AddHandlerAndSpawnBarriers()
+        //This method attempts to locate an APSpawnHandler component attached to a player.
+        //If a player exists but does not have an APSpawnHandler, a new one will be created.
+        //If a player does not exist/has not loaded, returns null.
+        public static APSpawnHandler FindSpawnHandler()
         {
             Player IdentifiedPlayer = (Player)UnityEngine.Object.FindObjectOfType(typeof(Player));
-            if ((IdentifiedPlayer != null) && (APState.Session != null))
+            if (IdentifiedPlayer != null)
             {
                 if (!IdentifiedPlayer.gameObject.TryGetComponent<APSpawnHandler>(out APSpawnHandler SpawnMaker))
                 {
                     SpawnMaker = IdentifiedPlayer.gameObject.AddComponent<APSpawnHandler>();
                 }
-                SpawnMaker.AttemptSpawns();
+                return SpawnMaker;
             }
+            return null;
         }
 
-        //Attempt to spawn blockades, but only do so if it has not already been done
-        public void AttemptSpawns()
+        //Confirms that a valid player exists, that a valid AP connection exists, and that spawning has not
+        //already been completed. If each condition is true, triggers spawn routine.
+        public static void CheckConditionsForSpawn()
         {
-            if (!SpawnsComplete) {
-                if (APState.PropulsionCannonLogic == "strictrequirement")
+            APSpawnHandler spawnHandler = FindSpawnHandler();
+            if ((spawnHandler != null) && (APState.Session != null))
+            {
+                if (!spawnHandler.SpawnsComplete)
                 {
-                    APSpawnHandler.SpawnAuroraBlockers(this.AuroraBlockers);
+                    spawnHandler.SpawnAllBlockers();
                 }
-                SpawnsComplete = true;
             }
         }
 
-        //This function spawns a barricade on the upper Aurora entrance.
-        //Does not spawn if the associated list has already been added to.
-        public static void SpawnAuroraBlockers(List<GameObject> AuroraBlockers)
+        //Spawn all blocking items called for by the AP connection.
+        public void SpawnAllBlockers()
         {
-            Vector3 blockRotation = new Vector3(0.0f, 232.0f, 0.0f);
-            Vector3 blockA1SpawnPoint = new Vector3(997.75f, 36.70f, 109.0f);
-            Vector3 blockB1SpawnPoint = new Vector3(998.4f, 36.7f, 108.0f);
-            Vector3 blockA2SpawnPoint = new Vector3(997.75f, 37.80f, 109.0f);
-            Vector3 blockB2SpawnPoint = new Vector3(998.4f, 37.8f, 108.0f);
-            Vector3 blockA3SpawnPoint = new Vector3(997.75f, 38.90f, 109.0f);
-            Vector3 blockB3SpawnPoint = new Vector3(998.4f, 38.9f, 108.0f);
-            UWE.CoroutineHost.StartCoroutine(ListNewGameObject(blockA1SpawnPoint, blockRotation,
-                TechType.StarshipCargoCrate, AuroraBlockers));
-            UWE.CoroutineHost.StartCoroutine(ListNewGameObject(blockB1SpawnPoint, blockRotation,
-                TechType.StarshipCargoCrate, AuroraBlockers));
-            UWE.CoroutineHost.StartCoroutine(ListNewGameObject(blockA2SpawnPoint, blockRotation,
-                TechType.StarshipCargoCrate, AuroraBlockers));
-            UWE.CoroutineHost.StartCoroutine(ListNewGameObject(blockB2SpawnPoint, blockRotation,
-                TechType.StarshipCargoCrate, AuroraBlockers));
-            UWE.CoroutineHost.StartCoroutine(ListNewGameObject(blockA3SpawnPoint, blockRotation,
-                TechType.StarshipCargoCrate, AuroraBlockers));
-            UWE.CoroutineHost.StartCoroutine(ListNewGameObject(blockB3SpawnPoint, blockRotation,
-                TechType.StarshipCargoCrate, AuroraBlockers));
+            // Load blockers.json
+            List<BlockerDataSet> BlockerList = ArchipelagoData.ReadJSON<List<BlockerDataSet>>("blockers");
+
+            if (APState.PropulsionCannonLogic == "strict_requirement")
+            {
+                SpawnBlockersInRegion(BlockerList, "AuroraUpper");
+            }
+            SpawnsComplete = true;
         }
 
-        //This function generates a new game object, assigns it a position and rotation, and adds them to designated list.
+        //This function sweeps the blocker list for any blockers matching the chosen region and spawns them.
+        public static void SpawnBlockersInRegion(List<BlockerDataSet> BlockerList, String region)
+        {
+            foreach (BlockerDataSet blocker in BlockerList)
+            {
+                UWE.CoroutineHost.StartCoroutine(SpawnNewGameObject(blocker.position, blocker.rotation,
+                TechType.StarshipCargoCrate, blocker.region));
+            }
+        }
+
+        //This function generates a new game object, assigns it a position and rotation, and attaches an APSpawnRule to them.
         //Currently, it can only spawn items with valid TechTypes.
-       public static IEnumerator ListNewGameObject(Vector3 spawnPosition, Vector3 eulerRotation, TechType objectTechType,
-            List<GameObject> objectList)
+        public static IEnumerator SpawnNewGameObject(Vector3 spawnPosition, Vector3 eulerRotation, TechType objectTechType,
+            String region)
         {
             CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(objectTechType);
             yield return task;
@@ -87,8 +88,27 @@ namespace Archipelago
             Quaternion spawnRotation = new Quaternion();
             spawnRotation.eulerAngles = eulerRotation;
             gameObject.transform.rotation = spawnRotation;
-            objectList.Add(gameObject);
+            APSpawnRule objectRule = gameObject.AddComponent<APSpawnRule>();
+            objectRule.region = region;
         }
     }
+
+    //This class attaches as a component of spawned items, in order to track and manage useful information about them.
+    //Not currently relevant, but potentially useful going forward.
+    internal class APSpawnRule : MonoBehaviour
+    {
+        public string region;
+    }
+
+    //This class allows for deserialization of blocker data from the relevant json.
+    //It is used to spawn in blocking objects.
+    public class BlockerDataSet (Vector3 position, Vector3 rotation, String region)
+    {
+        public Vector3 position = position;
+        public Vector3 rotation = rotation;
+        public String region = region;
+    }
+
+
 
 }

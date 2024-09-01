@@ -158,8 +158,17 @@ namespace Archipelago
                             " = " + TrackerThread.LogicSwimDepth + " (Swim) + " + TrackerThread.LogicVehicleDepth +
                             " (" + TrackerThread.LogicVehicle + ")");
                     }
-                    GUI.Label(new Rect(16, 116, 1000, 22),
+                    if (APState.PropulsionCannonLogic.Length == 0)
+                    {
+                        GUI.Label(new Rect(16, 96, 1000, 22),
+                            "No Propulsion Cannon Logic sent by Server. Assuming logicrequirement.");
+                    }
+                    else
+                    {
+                        GUI.Label(new Rect(16, 116, 1000, 22),
                         "Propulsion Cannon Logic: " + APState.PropulsionCannonLogic);
+                    }
+                    
                 }
                 if (!APState.TrackerProcessing.IsAlive)
                 {
@@ -977,7 +986,7 @@ namespace Archipelago
         [HarmonyPostfix]
         public static void Awake(Player __instance)
         {
-            APSpawnHandler.AddHandlerAndSpawnBarriers();
+            APSpawnHandler.CheckConditionsForSpawn();
         }
     }
 }
