@@ -19,7 +19,7 @@ namespace Archipelago
 {
     public class ArchipelagoUI : MonoBehaviour
     {
-        /*#if DEBUG
+        #if DEBUG
                 public static string mouse_target_desc = "";
                 private bool show_warps = false;
                 private bool show_items = false;
@@ -65,14 +65,14 @@ namespace Archipelago
                     }
                     copied_fade -= Time.deltaTime;
                 }
-        #endif*/
+        #endif
 
         void OnGUI()
         {
             Logging.TryUpdateLog();
-/*#if DEBUG
+#if DEBUG
             GUI.Box(new Rect(0, 0, Screen.width, 140), "");
-#endif*/
+#endif
             string ap_ver = "Archipelago v" + APState.AP_VERSION[0] + "." + APState.AP_VERSION[1] + "." + APState.AP_VERSION[2];
             if (APState.Session != null)
             {
@@ -158,17 +158,20 @@ namespace Archipelago
                             " = " + TrackerThread.LogicSwimDepth + " (Swim) + " + TrackerThread.LogicVehicleDepth +
                             " (" + TrackerThread.LogicVehicle + ")");
                     }
-                    if (APState.PropulsionCannonLogic.Length == 0)
+                    //Below Zero doesn't have a propulsion cannon
+                    if (!ArchipelagoPlugin.Zero)
                     {
-                        GUI.Label(new Rect(16, 96, 1000, 22),
-                            "No Propulsion Cannon Logic sent by Server. Assuming logicrequirement.");
+                        if (APState.PropulsionCannonLogic.Length == 0)
+                        {
+                            GUI.Label(new Rect(16, 96, 1000, 22),
+                                "No Propulsion Cannon Logic sent by Server. Assuming logicrequirement.");
+                        }
+                        else
+                        {
+                            GUI.Label(new Rect(16, 116, 1000, 22),
+                            "Propulsion Cannon Logic: " + APState.PropulsionCannonLogic);
+                        }
                     }
-                    else
-                    {
-                        GUI.Label(new Rect(16, 116, 1000, 22),
-                        "Propulsion Cannon Logic: " + APState.PropulsionCannonLogic);
-                    }
-                    
                 }
                 if (!APState.TrackerProcessing.IsAlive)
                 {
@@ -177,7 +180,7 @@ namespace Archipelago
                 }
             }
 
-            /*#if DEBUG
+            #if DEBUG
                         GUI.Label(new Rect(16, 16 + 20, Screen.width - 32, 50), ((copied_fade > 0.0f) ? "Copied!" : "Target: ") + mouse_target_desc);
 
                         if (APState.state != APState.State.Menu)
@@ -243,7 +246,7 @@ namespace Archipelago
                                 }
                             }
                         }
-            #endif*/
+            #endif
         }
 
         public bool PlayerNearStart()
@@ -828,7 +831,7 @@ namespace Archipelago
         }
     }
 
-    /*#if DEBUG
+    #if DEBUG
         [HarmonyPatch(typeof(GUIHand))]
         [HarmonyPatch("OnUpdate")]
         internal class GUIHand_OnUpdate_Patch
@@ -845,7 +848,7 @@ namespace Archipelago
                     ArchipelagoUI.mouse_target_desc = "";
             }
         }
-    #endif*/
+    #endif
 
     //[HarmonyPatch(typeof(LeakingRadiation))]
     //[HarmonyPatch("Start")]

@@ -263,13 +263,17 @@ namespace Archipelago
                 ServerConnectInfo.death_link = Convert.ToInt32(loginSuccess.SlotData["death_link"]) > 0;
                 set_deathlink();
 
-                //Check if player has a Spawn Handler component yet; if not, attach one
-                //Then attempt to spawn obstacles
-                //Note: this only fires if player connects while already in-world.
-                APSpawnHandler.CheckConditionsForSpawn();
+                //For safety, don't implement the new object spawning/location changes in Below Zero
+                if (!ArchipelagoPlugin.Zero)
+                {
+                    //Check if player has a Spawn Handler component yet; if not, attach one
+                    //Then attempt to spawn obstacles
+                    //Note: this only fires if player connects while already in-world.
+                    APSpawnHandler.CheckConditionsForSpawn();
 
-                //Depending on player settings, update location logic
-                ArchipelagoData.UpdateLogicData();
+                    //Depending on player settings, update location logic
+                    ArchipelagoData.UpdateLogicData();
+                }
 
             }
             else if (loginResult is LoginFailure loginFailure)
@@ -346,7 +350,7 @@ namespace Archipelago
                 SendLocID(closest_id);
                 return true;
             }
-/*#if DEBUG
+#if DEBUG
             ErrorMessage.AddError("Tried to check unregistered Location at: " + position);
             Debug.LogError("Tried to check unregistered Location at: " + position);
             foreach (var location in LOCATIONS)
@@ -360,7 +364,7 @@ namespace Archipelago
             }
             ErrorMessage.AddError("Could it be Location ID " + closest_id + " with a distance of "+closestDist + "?");
             Debug.LogError("Could it be Location ID " + closest_id + " with a distance of "+closestDist + "?");
-#endif*/
+#endif
             return false;
         }
 

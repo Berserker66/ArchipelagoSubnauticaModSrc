@@ -125,9 +125,4 @@ public static class ArchipelagoData
             }
         }
     }
-
-    public static void ChangeLogicEntry()
-    {
- 
-    }
 }
