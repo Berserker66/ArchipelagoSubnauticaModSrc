@@ -19,53 +19,53 @@ namespace Archipelago
 {
     public class ArchipelagoUI : MonoBehaviour
     {
-        #if DEBUG
-                public static string mouse_target_desc = "";
-                private bool show_warps = false;
-                private bool show_items = false;
-                private float copied_fade = 0.0f;
+#if DEBUG
+        public static string mouse_target_desc = "";
+        private bool show_warps = false;
+        private bool show_items = false;
+        private float copied_fade = 0.0f;
 
-                public static Dictionary<string, Vector3> WRECKS = new Dictionary<string, Vector3>
+        public static Dictionary<string, Vector3> WRECKS = new Dictionary<string, Vector3>
+        {
+            { "Blood Kelp Trench 1", new Vector3(-1201, -324, -396) },
+            { "Bulb Zone 1", new Vector3(929, -198, 593) },
+            { "Bulb Zone 2", new Vector3(1309, -215, 570) },
+            { "Dunes 1", new Vector3(-1448, -332, 723) },
+            { "Dunes 2", new Vector3(-1632, -334, 83) },
+            { "Dunes 3", new Vector3(-1210, -217, 7) },
+            { "Grand Reef 1", new Vector3(-290, -222, -773) },
+            { "Grand Reef 2", new Vector3(-865, -430, -1390) },
+            { "Grassy Plateaus 1", new Vector3(-15, -96, -624) },
+            { "Grassy Plateaus 2", new Vector3(-390, -120, 648) },
+            { "Grassy Plateaus 3", new Vector3(286, -72, 444) },
+            { "Grassy Plateaus 4", new Vector3(-635, -50, -2) },
+            { "Grassy Plateaus 5", new Vector3(-432, -90, -268) },
+            { "Kelp Forest 1", new Vector3(-320, -57, 252) },
+            { "Kelp Forest 2", new Vector3(65, -25, 385) },
+            { "Mountains 1", new Vector3(701, -346, 1224) },
+            { "Mountains 2", new Vector3(1057, -254, 1359) },
+            { "Northwestern Mushroom Forest", new Vector3(-645, -120, 773) },
+            { "Safe Shallows 1", new Vector3(-40, -14, -400) },
+            { "Safe Shallows 2", new Vector3(366, -6, -203) },
+            { "Sea Treader's Path", new Vector3(-1131, -166, -729) },
+            { "Sparse Reef", new Vector3(-787, -208, -713) },
+            { "Underwater Islands", new Vector3(-102, -179, 860) }
+        };
+        void Update()
+        {
+            if (mouse_target_desc != "")
+            {
+                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.C))
                 {
-                    { "Blood Kelp Trench 1", new Vector3(-1201, -324, -396) },
-                    { "Bulb Zone 1", new Vector3(929, -198, 593) },
-                    { "Bulb Zone 2", new Vector3(1309, -215, 570) },
-                    { "Dunes 1", new Vector3(-1448, -332, 723) },
-                    { "Dunes 2", new Vector3(-1632, -334, 83) },
-                    { "Dunes 3", new Vector3(-1210, -217, 7) },
-                    { "Grand Reef 1", new Vector3(-290, -222, -773) },
-                    { "Grand Reef 2", new Vector3(-865, -430, -1390) },
-                    { "Grassy Plateaus 1", new Vector3(-15, -96, -624) },
-                    { "Grassy Plateaus 2", new Vector3(-390, -120, 648) },
-                    { "Grassy Plateaus 3", new Vector3(286, -72, 444) },
-                    { "Grassy Plateaus 4", new Vector3(-635, -50, -2) },
-                    { "Grassy Plateaus 5", new Vector3(-432, -90, -268) },
-                    { "Kelp Forest 1", new Vector3(-320, -57, 252) },
-                    { "Kelp Forest 2", new Vector3(65, -25, 385) },
-                    { "Mountains 1", new Vector3(701, -346, 1224) },
-                    { "Mountains 2", new Vector3(1057, -254, 1359) },
-                    { "Northwestern Mushroom Forest", new Vector3(-645, -120, 773) },
-                    { "Safe Shallows 1", new Vector3(-40, -14, -400) },
-                    { "Safe Shallows 2", new Vector3(366, -6, -203) },
-                    { "Sea Treader's Path", new Vector3(-1131, -166, -729) },
-                    { "Sparse Reef", new Vector3(-787, -208, -713) },
-                    { "Underwater Islands", new Vector3(-102, -179, 860) }
-                };
-                void Update()
-                {
-                    if (mouse_target_desc != "")
-                    {
-                        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.C))
-                        {
-                            Logging.Log("INSPECT GAME OBJECT: " + mouse_target_desc, ingame:false);
-                            string id = mouse_target_desc.Split(new char[] { ':' })[0];
-                            GUIUtility.systemCopyBuffer = id;
-                            copied_fade = 1.0f;
-                        }
-                    }
-                    copied_fade -= Time.deltaTime;
+                    Logging.Log("INSPECT GAME OBJECT: " + mouse_target_desc, ingame:false);
+                    string id = mouse_target_desc.Split(new char[] { ':' })[0];
+                    GUIUtility.systemCopyBuffer = id;
+                    copied_fade = 1.0f;
                 }
-        #endif
+            }
+            copied_fade -= Time.deltaTime;
+        }
+#endif
 
         void OnGUI()
         {
@@ -180,73 +180,73 @@ namespace Archipelago
                 }
             }
 
-            #if DEBUG
-                        GUI.Label(new Rect(16, 16 + 20, Screen.width - 32, 50), ((copied_fade > 0.0f) ? "Copied!" : "Target: ") + mouse_target_desc);
+#if DEBUG
+            GUI.Label(new Rect(16, 16 + 20, Screen.width - 32, 50), ((copied_fade > 0.0f) ? "Copied!" : "Target: ") + mouse_target_desc);
 
-                        if (APState.state != APState.State.Menu)
+            if (APState.state != APState.State.Menu)
+            {
+                if (GUI.Button(new Rect(16, 16 + 25 + 8 + 25 + 8, 150, 25), "Activate Cheats"))
+                {
+                    DevConsole.SendConsoleCommand("nodamage");
+                    DevConsole.SendConsoleCommand("oxygen");
+                    DevConsole.SendConsoleCommand("item seaglide");
+                    DevConsole.SendConsoleCommand("item battery 10");
+                    DevConsole.SendConsoleCommand("fog");
+                    DevConsole.SendConsoleCommand("speed 3");
+                }
+                if (GUI.Button(new Rect(16 + 150 + 8, 16 + 25 + 8 + 25 + 8, 150, 25), "Warp to Locations"))
+                {
+                    show_warps = !show_warps;
+                    if (show_warps) show_items = false;
+                }
+                if (GUI.Button(new Rect(16 + 150 + 8 + 150 + 8, 16 + 25 + 8 + 25 + 8, 150, 25), "Items"))
+                {
+                    show_items = !show_items;
+                    if (show_items) show_warps = false;
+                }
+
+                if (show_warps)
+                {
+                    int i = 0;
+                    int j = 125;
+                    foreach (var kv in WRECKS)
+                    {
+                        if (GUI.Button(new Rect(16 + i, j, 200, 25), kv.Key.ToString()))
                         {
-                            if (GUI.Button(new Rect(16, 16 + 25 + 8 + 25 + 8, 150, 25), "Activate Cheats"))
-                            {
-                                DevConsole.SendConsoleCommand("nodamage");
-                                DevConsole.SendConsoleCommand("oxygen");
-                                DevConsole.SendConsoleCommand("item seaglide");
-                                DevConsole.SendConsoleCommand("item battery 10");
-                                DevConsole.SendConsoleCommand("fog");
-                                DevConsole.SendConsoleCommand("speed 3");
-                            }
-                            if (GUI.Button(new Rect(16 + 150 + 8, 16 + 25 + 8 + 25 + 8, 150, 25), "Warp to Locations"))
-                            {
-                                show_warps = !show_warps;
-                                if (show_warps) show_items = false;
-                            }
-                            if (GUI.Button(new Rect(16 + 150 + 8 + 150 + 8, 16 + 25 + 8 + 25 + 8, 150, 25), "Items"))
-                            {
-                                show_items = !show_items;
-                                if (show_items) show_warps = false;
-                            }
-
-                            if (show_warps)
-                            {
-                                int i = 0;
-                                int j = 125;
-                                foreach (var kv in WRECKS)
-                                {
-                                    if (GUI.Button(new Rect(16 + i, j, 200, 25), kv.Key.ToString()))
-                                    {
-                                        string target = ((int)kv.Value.x).ToString() + " " +
-                                                        ((int)kv.Value.y).ToString() + " " +
-                                                        ((int)kv.Value.z + 50).ToString();
-                                        DevConsole.SendConsoleCommand("warp " + target);
-                                    }
-                                    j += 30;
-                                    if (j + 30 >= Screen.height)
-                                    {
-                                        j = 125;
-                                        i += 200 + 16;
-                                    }
-                                }
-                            }
-
-                            if (show_items)
-                            {
-                                int i = 0;
-                                int j = 125;
-                                foreach (var kv in APState.ITEM_CODE_TO_TECHTYPE)
-                                {
-                                    if (GUI.Button(new Rect(16 + i, j, 200, 25), kv.Value.ToString()))
-                                    {
-                                        APState.unlock(kv.Value);
-                                    }
-                                    j += 30;
-                                    if (j + 30 >= Screen.height)
-                                    {
-                                        j = 125;
-                                        i += 200 + 16;
-                                    }
-                                }
-                            }
+                            string target = ((int)kv.Value.x).ToString() + " " +
+                                            ((int)kv.Value.y).ToString() + " " +
+                                            ((int)kv.Value.z + 50).ToString();
+                            DevConsole.SendConsoleCommand("warp " + target);
                         }
-            #endif
+                        j += 30;
+                        if (j + 30 >= Screen.height)
+                        {
+                            j = 125;
+                            i += 200 + 16;
+                        }
+                    }
+                }
+
+                if (show_items)
+                {
+                    int i = 0;
+                    int j = 125;
+                    foreach (var kv in APState.ITEM_CODE_TO_TECHTYPE)
+                    {
+                        if (GUI.Button(new Rect(16 + i, j, 200, 25), kv.Value.ToString()))
+                        {
+                            APState.unlock(kv.Value);
+                        }
+                        j += 30;
+                        if (j + 30 >= Screen.height)
+                        {
+                            j = 125;
+                            i += 200 + 16;
+                        }
+                    }
+                }
+            }
+#endif
         }
 
         public bool PlayerNearStart()
@@ -831,24 +831,24 @@ namespace Archipelago
         }
     }
 
-    #if DEBUG
-        [HarmonyPatch(typeof(GUIHand))]
-        [HarmonyPatch("OnUpdate")]
-        internal class GUIHand_OnUpdate_Patch
+#if DEBUG
+    [HarmonyPatch(typeof(GUIHand))]
+    [HarmonyPatch("OnUpdate")]
+    internal class GUIHand_OnUpdate_Patch
+    {
+        [HarmonyPostfix]
+        public static void OnUpdate(GUIHand __instance)
         {
-            [HarmonyPostfix]
-            public static void OnUpdate(GUIHand __instance)
-            {
-                var active_target = __instance.GetActiveTarget();
-                if (active_target)
-                    ArchipelagoUI.mouse_target_desc = APState.InspectGameObject(active_target.gameObject);
-                else if (PDAScanner.scanTarget.gameObject)
-                    ArchipelagoUI.mouse_target_desc = APState.InspectGameObject(PDAScanner.scanTarget.gameObject);
-                else
-                    ArchipelagoUI.mouse_target_desc = "";
-            }
+            var active_target = __instance.GetActiveTarget();
+            if (active_target)
+                ArchipelagoUI.mouse_target_desc = APState.InspectGameObject(active_target.gameObject);
+            else if (PDAScanner.scanTarget.gameObject)
+                ArchipelagoUI.mouse_target_desc = APState.InspectGameObject(PDAScanner.scanTarget.gameObject);
+            else
+                ArchipelagoUI.mouse_target_desc = "";
         }
-    #endif
+    }
+#endif
 
     //[HarmonyPatch(typeof(LeakingRadiation))]
     //[HarmonyPatch("Start")]
