@@ -158,13 +158,13 @@ namespace Archipelago
                             " = " + TrackerThread.LogicSwimDepth + " (Swim) + " + TrackerThread.LogicVehicleDepth +
                             " (" + TrackerThread.LogicVehicle + ")");
                     }
-                    //Below Zero doesn't have a propulsion cannon
+                    //Below Zero doesn't have a propulsion cannon 
                     if (!ArchipelagoPlugin.Zero)
                     {
                         if (APState.PropulsionCannonLogic.Length == 0)
                         {
-                            GUI.Label(new Rect(16, 96, 1000, 22),
-                                "No Propulsion Cannon Logic sent by Server. Assuming logicrequirement.");
+                            GUI.Label(new Rect(16, 116, 1000, 22),
+                                "No Propulsion Cannon Logic sent by Server. Assuming logic_requirement.");
                         }
                         else
                         {

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,40 +9,40 @@
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx.Harmony">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\core\BepInEx.Harmony.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\BepInEx\core\BepInEx.Harmony.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx.Preloader">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\core\BepInEx.Preloader.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\BepInEx\core\BepInEx.Preloader.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>special\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PlatformIODefault">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\PlatformIODefault.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\PlatformIODefault.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Addressables">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\Unity.Addressables.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\Unity.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>D:\SteamLibrary\SteamApps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -55,7 +55,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir &quot;C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\Archipelago&quot;&#xD;&#xA;COPY &quot;C:\Users\nelso\Desktop\Subnautica Modding\ArchipelagoSubnauticaModSrc\mod\bin\Debug\netstandard2.0\Archipelago.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\Archipelago&quot;&#xD;&#xA;&#xD;&#xA;COPY &quot;C:\Users\nelso\Desktop\Subnautica Modding\ArchipelagoSubnauticaModSrc\mod\bin\Debug\netstandard2.0\Archipelago.MultiClient.Net.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\Archipelago\&quot;" />
+    <Exec Command="COPY $(TargetPath) D:\SteamLibrary\steamapps\common\Subnautica\BepInEx\plugins\Archipelago\Archipelago.dll&#xD;&#xA;&#xD;&#xA;COPY $(TargetDir)Archipelago.MultiClient.Net.dll D:\SteamLibrary\steamapps\common\Subnautica\BepInEx\plugins\Archipelago\Archipelago.MultiClient.Net.dll" />
   </Target>
 
 </Project>
