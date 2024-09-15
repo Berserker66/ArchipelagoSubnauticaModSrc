@@ -70,7 +70,7 @@ namespace Archipelago
         {
             Logging.TryUpdateLog();
 #if DEBUG
-            GUI.Box(new Rect(0, 0, Screen.width, 120), "");
+            GUI.Box(new Rect(0, 0, Screen.width, 140), "");
 #endif
             string ap_ver = "Archipelago v" + APState.AP_VERSION[0] + "." + APState.AP_VERSION[1] + "." + APState.AP_VERSION[2];
             if (APState.Session != null)
@@ -97,11 +97,11 @@ namespace Archipelago
 
                 bool submit = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
 
-                APState.ServerConnectInfo.host_name = GUI.TextField(new Rect(150 + 16 + 8, 36, 150, 20), 
+                APState.ServerConnectInfo.host_name = GUI.TextField(new Rect(150 + 16 + 8, 36, 150, 20),
                     APState.ServerConnectInfo.host_name);
-                APState.ServerConnectInfo.slot_name = GUI.TextField(new Rect(150 + 16 + 8, 56, 150, 20), 
+                APState.ServerConnectInfo.slot_name = GUI.TextField(new Rect(150 + 16 + 8, 56, 150, 20),
                     APState.ServerConnectInfo.slot_name);
-                APState.ServerConnectInfo.password = GUI.TextField(new Rect(150 + 16 + 8, 76, 150, 20), 
+                APState.ServerConnectInfo.password = GUI.TextField(new Rect(150 + 16 + 8, 76, 150, 20),
                     APState.ServerConnectInfo.password);
 
                 if (submit && Event.current.type == EventType.KeyDown)
@@ -117,50 +117,64 @@ namespace Archipelago
             }
             else if (APState.state == APState.State.InGame && APState.Session != null && Player.main != null)
             {
-                
+
                 if (APState.TrackedLocation != -1 && APState.TrackedMode != TrackerMode.Disabled)
                 {
                     string text = "Locations left: " + APState.TrackedLocationsCount;
                     if (APState.TrackedLocation != -1)
                     {
-                        text += ". Closest is " + (long)APState.TrackedDistance + " m (" 
+                        text += ". Closest is " + (long)APState.TrackedDistance + " m ("
                                 + (int)APState.TrackedAngle + "°) away";
                         text += ", named " + APState.TrackedLocationName;
                     }
-                    
+
                     GUI.Label(new Rect(16, 36, 1000, 20), text);
                 }
 
                 if (APState.TrackedFishCount > 0 && APState.TrackedMode != TrackerMode.Disabled)
                 {
-                    GUI.Label(new Rect(16, 56, 1000, 22), 
-                        "Fish left: "+APState.TrackedFishCount + ". Such as: "+APState.TrackedFish);
+                    GUI.Label(new Rect(16, 56, 1000, 22),
+                        "Fish left: " + APState.TrackedFishCount + ". Such as: " + APState.TrackedFish);
                 }
-                
+
                 if (PlayerNearStart())
                 {
-                    GUI.Label(new Rect(16, 76, 1000, 22), 
-                        "Goal: "+APState.Goal);
+                    GUI.Label(new Rect(16, 76, 1000, 22),
+                        "Goal: " + APState.Goal);
                     if (APState.SwimRule.Length == 0)
                     {
-                        GUI.Label(new Rect(16, 96, 1000, 22), 
-                            "No Swim Rule sent by Server. Assuming items_hard." + 
-                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth + 
+                        GUI.Label(new Rect(16, 96, 1000, 22),
+                            "No Swim Rule sent by Server. Assuming items_hard." +
+                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth +
                                                           TrackerThread.LogicVehicleDepth));
                     }
                     else
                     {
-                        GUI.Label(new Rect(16, 96, 1000, 22), 
-                            "Swim Rule: "+APState.SwimRule +
-                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth + 
-                                                          TrackerThread.LogicVehicleDepth) + 
-                            " = " + TrackerThread.LogicSwimDepth + " (Swim) + " + TrackerThread.LogicVehicleDepth + 
+                        GUI.Label(new Rect(16, 96, 1000, 22),
+                            "Swim Rule: " + APState.SwimRule +
+                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth +
+                                                          TrackerThread.LogicVehicleDepth) +
+                            " = " + TrackerThread.LogicSwimDepth + " (Swim) + " + TrackerThread.LogicVehicleDepth +
                             " (" + TrackerThread.LogicVehicle + ")");
+                    }
+                    //Below Zero doesn't have a propulsion cannon 
+                    if (!ArchipelagoPlugin.Zero)
+                    {
+                        if (APState.PropulsionCannonLogic.Length == 0)
+                        {
+                            GUI.Label(new Rect(16, 116, 1000, 22),
+                                "No Propulsion Cannon Logic sent by Server. Assuming logic_requirement.");
+                        }
+                        else
+                        {
+                            GUI.Label(new Rect(16, 116, 1000, 22),
+                            "Propulsion Cannon Logic: " + APState.PropulsionCannonLogic);
+                        }
                     }
                 }
                 if (!APState.TrackerProcessing.IsAlive)
                 {
-                    GUI.Label(new Rect(16, 116, 1000, 22), 
+                    GUI.Label(new Rect(16, 136, 1000, 22),
                         "Error: Tracker Thread died. Tracker will not update.");
                 }
             }
@@ -254,7 +268,7 @@ namespace Archipelago
             }
             return (podTransform.position - Player.main.transform.position).magnitude < 10f;
         }
-        
+
         private void Start()
         {
             RegisterCmds();
@@ -296,7 +310,7 @@ namespace Archipelago
                 text += (string)n.data[i];
                 if (i < n.data.Count - 1) text += " ";
             }
-            
+
             if (APState.Session != null && APState.Authenticated)
             {
                 var packet = new SayPacket();
@@ -311,7 +325,7 @@ namespace Archipelago
         private void OnConsoleCommand_silent(NotificationCenter.Notification n)
         {
             APState.Silent = !APState.Silent;
-            
+
             if (APState.Silent)
             {
                 Logging.Log("Muted Archipelago chat.");
@@ -344,7 +358,7 @@ namespace Archipelago
         {
             APState.ServerConnectInfo.death_link = !APState.ServerConnectInfo.death_link;
             APState.set_deathlink();
-            
+
             if (APState.ServerConnectInfo.death_link)
             {
                 Logging.Log("Enabled DeathLink.");
@@ -354,7 +368,7 @@ namespace Archipelago
                 Logging.Log("Disabled DeathLink.");
             }
         }
-        
+
         private void OnConsoleCommand_resync(NotificationCenter.Notification n)
         {
             if (APState.state == APState.State.InGame)
@@ -368,13 +382,13 @@ namespace Archipelago
                 Logging.Log("Cannot resync in menu.");
             }
         }
-        
+
         private void OnConsoleCommand_apdebug(NotificationCenter.Notification n)
         {
             //var loc = APState.TrackedLocation;
             //var loc_data = APState.LOCATIONS[loc];
             //DevConsole.SendConsoleCommand("warp "+(int)loc_data.Position.x+" "+(int)loc_data.Position.y+" "+(int)loc_data.Position.z);
-            
+
             //Debug.LogError("Analysis:");
             //string json = JsonConvert.SerializeObject(Player.main.pdaData.analysisTech);
             //Debug.LogError(json);
@@ -438,11 +452,11 @@ namespace Archipelago
     internal class BlueprintHandTarget_Start_Patch
     {
         // Using TechType.None gives 2 titanium we don't want that
-        [HarmonyPrefix] 
+        [HarmonyPrefix]
         public static void ReplaceDataboxContent(BlueprintHandTarget __instance)
         {
             // needs to be a unique not taken ID
-            __instance.unlockTechType = (TechType)__instance.transform.position.x+100000;
+            __instance.unlockTechType = (TechType)__instance.transform.position.x + 100000;
         }
     }
 
@@ -450,14 +464,14 @@ namespace Archipelago
     [HarmonyPatch("Start")]
     internal class DataboxSpawner_Start_Patch
     {
-        
+
         [HarmonyPrefix]
         public static bool AlwaysSpawn(DataboxSpawner __instance, ref IEnumerator __result)
         {
             __result = PatchedStart(__instance);
             return false;
         }
-        
+
         private static IEnumerator PatchedStart(DataboxSpawner __instance)
         {
             if (__instance.spawnTechType != 0)
@@ -546,13 +560,13 @@ namespace Archipelago
         public static void PrintCascade(List<KnownTech.AnalysisTech> ___analysisTech)
         {
             foreach (KnownTech.AnalysisTech tech in ___analysisTech)
-            { 
+            {
                 Debug.LogError(tech.techType + " -> " + JsonConvert.SerializeObject(tech.unlockTechTypes));
             }
         }
     }
 #endif
-    
+
     [HarmonyPatch(typeof(MainGameController))]
     [HarmonyPatch("LoadInitialInventoryAsync")]
     internal class MainGameController_LoadInitialInventoryAsync_Patch
@@ -579,7 +593,7 @@ namespace Archipelago
             return true;
         }
     }*/
-    
+
     [HarmonyPatch(typeof(UserStoragePC), "InitializeAsyncImpl")]
     internal class PlatformInitPatch
     {
@@ -587,7 +601,7 @@ namespace Archipelago
         [HarmonyPrefix]
         public static void InitializeOverride(object owner, object state)
         {
-            
+
             var storage = owner as UserStoragePC;
             var rawPath = storage.GetType().GetField("savePath",
                 BindingFlags.NonPublic | BindingFlags.Instance).GetValue(storage) as string;
@@ -607,7 +621,7 @@ namespace Archipelago
             }
         }
     }
-    
+
     [HarmonyPatch(typeof(SaveLoadManager.GameInfo))]
     [HarmonyPatch("SaveIntoCurrentSlot")]
     internal class GameInfo_SaveIntoCurrentSlot_Patch
@@ -616,11 +630,11 @@ namespace Archipelago
         public static void SaveIntoCurrentSlot(SaveLoadManager.GameInfo info)
         {
             var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(APState.ServerConnectInfo));
-            Platform.IO.File.WriteAllBytes(Platform.IO.Path.Combine(SaveLoadManager.GetTemporarySavePath(), 
+            Platform.IO.File.WriteAllBytes(Platform.IO.Path.Combine(SaveLoadManager.GetTemporarySavePath(),
                 "archipelago.json"), bytes);
         }
     }
-    
+
     [HarmonyPatch(typeof(SaveLoadManager))]
     [HarmonyPatch("SetCurrentSlot")]
     internal class SaveLoadManager_SetCurrentSlot_Patch
@@ -700,7 +714,7 @@ namespace Archipelago
                     }
                     catch (Exception e)
                     {
-                        Logging.LogError("archipelago_item_index error: " + e.Message, ingame:false);
+                        Logging.LogError("archipelago_item_index error: " + e.Message, ingame: false);
                     }
                 }
             }
@@ -873,7 +887,7 @@ namespace Archipelago
     //}
 
 
-    
+
     [HarmonyPatch(typeof(Story.UnlockBlueprintData))]
     [HarmonyPatch("Trigger")]
     internal class UnlockBlueprintData_Trigger_Patch
@@ -922,7 +936,7 @@ namespace Archipelago
             APState.DeathLinkKilling = false;
         }
     }
-    
+
     // Subnautica specific hooks
     // Ship start already exploded
     internal class EscapePod_StopIntroCinematic_Patch
@@ -955,7 +969,7 @@ namespace Archipelago
             return false;
         }
     }
-    
+
     internal class RocketConstructor_StartRocketConstruction_Patch
     {
         [HarmonyPrefix]
@@ -980,7 +994,7 @@ namespace Archipelago
             return true;
         }
     }
-    
+
     [HarmonyPatch(typeof(StoryGoalCustomEventHandler))]
     [HarmonyPatch("NotifyGoalComplete")]
     internal class StoryGoalCustomEventHandler_NotifyGoalComplete_Patch
@@ -992,6 +1006,15 @@ namespace Archipelago
             {
                 APState.send_completion();
             }
+        }
+    }
+
+    internal class Player_Start_Patch
+    {
+        [HarmonyPostfix]
+        public static void Awake(Player __instance)
+        {
+            APSpawnHandler.CheckConditionsForSpawn();
         }
     }
 }

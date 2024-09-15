@@ -51,6 +51,7 @@ namespace Archipelago
         public static string Goal = "launch";
         public static string GoalEvent = "";
         public static string SwimRule = "";
+        public static string PropulsionCannonLogic = "";
         public static bool FreeSamples;
         public static bool Silent = false;
         public static Thread TrackerProcessing;
@@ -237,6 +238,10 @@ namespace Archipelago
                 {
                     SwimRule = (string)swim_rule;
                 }
+                if (loginSuccess.SlotData.TryGetValue("propulsion_cannon_logic", out var propulsion_cannon_logic))
+                {
+                    PropulsionCannonLogic = (string)propulsion_cannon_logic;
+                }
                 if (loginSuccess.SlotData.TryGetValue("free_samples", out var free_samples))
                 {
                     FreeSamples = Convert.ToInt32(free_samples) > 0;
@@ -255,6 +260,18 @@ namespace Archipelago
                 Logging.Log("SlotData: " + JsonConvert.SerializeObject(loginSuccess.SlotData), ingame:false);
                 ServerConnectInfo.death_link = Convert.ToInt32(loginSuccess.SlotData["death_link"]) > 0;
                 set_deathlink();
+
+                //For safety, don't implement the new object spawning/location changes in Below Zero
+                if (!ArchipelagoPlugin.Zero)
+                {
+                    //Check if player has a Spawn Handler component yet; if not, attach one
+                    //Then attempt to spawn obstacles
+                    //Note: this only fires if player connects while already in-world.
+                    APSpawnHandler.CheckConditionsForSpawn();
+
+                    //Depending on player settings, update location logic
+                    ArchipelagoData.UpdateLogicData();
+                }
 
             }
             else if (loginResult is LoginFailure loginFailure)
