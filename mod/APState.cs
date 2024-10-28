@@ -31,6 +31,13 @@ namespace Archipelago
             InGame
         }
 
+        public enum Inclusion
+        {
+            Included,
+            NotInLogic,
+            Excluded
+        }
+
         public static Dictionary<string, string> GoalMapping = new Dictionary<string, string>()
         {
             { "free", "Goal_Disable_Gun" },
@@ -51,6 +58,11 @@ namespace Archipelago
         public static string Goal = "launch";
         public static string GoalEvent = "";
         public static string SwimRule = "";
+        public static float SwimDepth = 0f;
+        public static bool ItemsRelevant = true;
+        public static Inclusion SeamothState = Inclusion.Included;
+        public static Inclusion PrawnState = Inclusion.Included;
+        public static Inclusion CyclopsState = Inclusion.Included;
         public static bool FreeSamples;
         public static bool Silent = false;
         public static Thread TrackerProcessing;
@@ -236,10 +248,61 @@ namespace Archipelago
                 if (loginSuccess.SlotData.TryGetValue("swim_rule", out var swim_rule))
                 {
                     SwimRule = (string)swim_rule;
+                    if (SwimRule.Length == 0)
+                    {
+                        // assume most permissive logic if none given
+                        SwimRule = "items_hard";
+                    }
+                    var nameParts = SwimRule.Split('_');
+                    ItemsRelevant = nameParts.Length > 1;
+
+                    switch (nameParts.GetLast())
+                    {
+                        case "easy":
+                        {
+                            SwimDepth = 200f;
+                            break;
+                        }
+                        case "normal":
+                        {
+                            SwimDepth = 400f;
+                            break;
+                        }
+                        case "hard":
+                        {
+                            SwimDepth = 600f;
+                            break;
+                        }
+                    }
                 }
                 if (loginSuccess.SlotData.TryGetValue("free_samples", out var free_samples))
                 {
                     FreeSamples = Convert.ToInt32(free_samples) > 0;
+                }
+                if (loginSuccess.SlotData.TryGetValue("include_seamoth", out var include_seamoth))
+                {
+                    // This convoluted mess... works. It only has to run on load, so... good enough for now.
+                    if (Enum.TryParse(include_seamoth.ToString(), true, out Inclusion really_include_seamoth))
+                    {
+                        SeamothState = really_include_seamoth;
+                    }
+                    Logging.LogDebug("Seamoth State: " + SeamothState);
+                }
+                if (loginSuccess.SlotData.TryGetValue("include_prawn", out var include_prawn))
+                {
+                    if (Enum.TryParse(include_prawn.ToString(), true, out Inclusion really_include_prawn))
+                    {
+                        PrawnState = really_include_prawn;
+                    }
+                    Logging.LogDebug("Prawn State: " + PrawnState);
+                }
+                if (loginSuccess.SlotData.TryGetValue("include_cyclops", out var include_cyclops))
+                {
+                    if (Enum.TryParse(include_cyclops.ToString(), true, out Inclusion really_include_cyclops))
+                    {
+                        CyclopsState = really_include_cyclops;
+                    }
+                    Logging.LogDebug("Cyclops State: " + CyclopsState);
                 }
                 Goal = (string)loginSuccess.SlotData["goal"];
                 GoalMapping.TryGetValue(Goal, out GoalEvent);
@@ -250,8 +313,8 @@ namespace Archipelago
                         vanillaTech.Add((TechType)Enum.Parse(typeof(TechType), tech.ToString()));
                     }
                 }
-                    
-                
+
+
                 Logging.Log("SlotData: " + JsonConvert.SerializeObject(loginSuccess.SlotData), ingame:false);
                 ServerConnectInfo.death_link = Convert.ToInt32(loginSuccess.SlotData["death_link"]) > 0;
                 set_deathlink();

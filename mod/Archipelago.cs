@@ -131,36 +131,38 @@ namespace Archipelago
                     GUI.Label(new Rect(16, 36, 1000, 20), text);
                 }
 
+                int showing_fish = 0;
                 if (APState.TrackedFishCount > 0 && APState.TrackedMode != TrackerMode.Disabled)
                 {
-                    GUI.Label(new Rect(16, 56, 1000, 22), 
+                    showing_fish = 1;
+                    GUI.Label(new Rect(16, 56, 1000, 22),
                         "Fish left: "+APState.TrackedFishCount + ". Such as: "+APState.TrackedFish);
                 }
-                
+
                 if (PlayerNearStart())
                 {
-                    GUI.Label(new Rect(16, 76, 1000, 22), 
+                    GUI.Label(new Rect(16, 56 + showing_fish * 20, 1000, 22),
                         "Goal: "+APState.Goal);
                     if (APState.SwimRule.Length == 0)
                     {
-                        GUI.Label(new Rect(16, 96, 1000, 22), 
-                            "No Swim Rule sent by Server. Assuming items_hard." + 
-                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth + 
+                        GUI.Label(new Rect(16, 76 + showing_fish * 20, 1000, 22),
+                            "No Swim Rule sent by Server. Assuming items_hard." +
+                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth +
                                                           TrackerThread.LogicVehicleDepth));
                     }
                     else
                     {
-                        GUI.Label(new Rect(16, 96, 1000, 22), 
+                        GUI.Label(new Rect(16, 76 + showing_fish * 20, 1000, 22),
                             "Swim Rule: "+APState.SwimRule +
-                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth + 
-                                                          TrackerThread.LogicVehicleDepth) + 
-                            " = " + TrackerThread.LogicSwimDepth + " (Swim) + " + TrackerThread.LogicVehicleDepth + 
+                            " Current Logical Depth: " + (TrackerThread.LogicSwimDepth +
+                                                          TrackerThread.LogicVehicleDepth) +
+                            " = " + TrackerThread.LogicSwimDepth + " (Swim) + " + TrackerThread.LogicVehicleDepth +
                             " (" + TrackerThread.LogicVehicle + ")");
                     }
                 }
                 if (!APState.TrackerProcessing.IsAlive)
                 {
-                    GUI.Label(new Rect(16, 116, 1000, 22), 
+                    GUI.Label(new Rect(16, 96 + showing_fish * 20, 1000, 22),
                         "Error: Tracker Thread died. Tracker will not update.");
                 }
             }
@@ -552,7 +554,112 @@ namespace Archipelago
         }
     }
 #endif
-    
+
+    /* The next 3x patches graft the Cyclops Shield Module onto
+       the Moonpool Fabricator if the goal is launch but the Cyclops is not in game */
+    [HarmonyPatch(typeof(CraftTree))]
+    [HarmonyPatch("SeamothUpgradesScheme")]
+    internal class MoonpoolFabricator
+    {
+        [HarmonyPrefix]
+        public static bool AdditionalShieldGenerator(ref CraftNode __result)
+        {
+            if (APState.state != APState.State.InGame)
+            {
+                return true;
+            }
+
+            // We only need to run this if the Cyclops isn't in game and we're trying to goal
+            if (APState.CyclopsState != APState.Inclusion.Excluded || APState.Goal != "launch")
+            {
+                return true;
+            }
+
+            __result = new CraftNode("Root").AddNode(
+                new CraftNode("CommonModules", TreeAction.Expand).AddNode(
+                    new CraftNode("VehicleArmorPlating", TreeAction.Craft, TechType.VehicleArmorPlating),
+                    new CraftNode("VehiclePowerUpgradeModule", TreeAction.Craft, TechType.VehiclePowerUpgradeModule),
+                    new CraftNode("VehicleStorageModule", TreeAction.Craft, TechType.VehicleStorageModule)
+                ),
+                new CraftNode("SeamothModules", TreeAction.Expand).AddNode(
+                    new CraftNode("VehicleHullModule1", TreeAction.Craft, TechType.VehicleHullModule1),
+                    new CraftNode("SeamothSolarCharge", TreeAction.Craft, TechType.SeamothSolarCharge),
+                    new CraftNode("SeamothElectricalDefense", TreeAction.Craft, TechType.SeamothElectricalDefense),
+                    new CraftNode("SeamothTorpedoModule", TreeAction.Craft, TechType.SeamothTorpedoModule),
+                    new CraftNode("SeamothSonarModule", TreeAction.Craft, TechType.SeamothSonarModule)
+                ),
+                new CraftNode("ExosuitModules", TreeAction.Expand).AddNode(
+                    new CraftNode("ExoHullModule1", TreeAction.Craft, TechType.ExoHullModule1),
+                    new CraftNode("ExosuitThermalReactorModule", TreeAction.Craft, TechType.ExosuitThermalReactorModule),
+                    new CraftNode("ExosuitJetUpgradeModule", TreeAction.Craft, TechType.ExosuitJetUpgradeModule),
+                    new CraftNode("ExosuitPropulsionArmModule", TreeAction.Craft, TechType.ExosuitPropulsionArmModule),
+                    new CraftNode("ExosuitGrapplingArmModule", TreeAction.Craft, TechType.ExosuitGrapplingArmModule),
+                    new CraftNode("ExosuitDrillArmModule", TreeAction.Craft, TechType.ExosuitDrillArmModule),
+                    new CraftNode("ExosuitTorpedoArmModule", TreeAction.Craft, TechType.ExosuitTorpedoArmModule)
+                ),
+                new CraftNode("Torpedoes", TreeAction.Expand).AddNode(
+                    new CraftNode("WhirlpoolTorpedo", TreeAction.Craft, TechType.WhirlpoolTorpedo),
+                    new CraftNode("GasTorpedo", TreeAction.Craft, TechType.GasTorpedo)
+                ),
+                new CraftNode("CyclopsModules", TreeAction.Expand).AddNode(
+                    new CraftNode("CyclopsShieldModule", TreeAction.Craft, TechType.CyclopsShieldModule)
+                )
+            );
+
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(Language))]
+    [HarmonyPatch("Get")]
+    internal class MoonpoolFabricator_CraftNodeText
+    {
+        [HarmonyPrefix]
+        public static bool RewriteCraftNodeText(ref string __result, string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return true;
+            }
+
+            // This is our own made-up string, it won't match anything else.
+            if (key == "SeamothUpgradesMenu_CyclopsModules")
+            {
+                // Use a built-in replacement so it's translated properly for us
+                // comes out as "Cyclops Upgrades" (there is no "Cyclops modules" translated string)
+                __result = Language.main.Get("TechCategoryCyclopsUpgrades");
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(SpriteManager))]
+    [HarmonyPatch("Get")]
+    [HarmonyPatch(new Type[] { typeof(SpriteManager.Group), typeof(string) })]
+    internal class MoonpoolFabricator_CraftNodeIcon
+    {
+        [HarmonyPrefix]
+        public static bool RewriteCraftNodeIcon(ref Atlas.Sprite __result, SpriteManager.Group group, string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return true;
+            }
+
+            // our made-up string, which otherwise returns the default (question-mark) icon
+            if (name == "SeamothUpgrades_CyclopsModules")
+            {
+                // This sprite comes from the vehicle fabricator
+                __result = SpriteManager.Get(TechType.Cyclops);
+                return false;
+            }
+
+            return true;
+        }
+    }
+
     [HarmonyPatch(typeof(MainGameController))]
     [HarmonyPatch("LoadInitialInventoryAsync")]
     internal class MainGameController_LoadInitialInventoryAsync_Patch
