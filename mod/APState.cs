@@ -38,7 +38,7 @@ namespace Archipelago
             { "infected", "Infection_Progress4" },
         };
         
-        public static int[] AP_VERSION = new int[] { 0, 5, 0 };
+        public static int[] AP_VERSION = new int[] { 0, 6, 2 };
         public static APConnectInfo ServerConnectInfo = new APConnectInfo();
         public static DeathLinkService DeathLinkService = null;
         public static bool DeathLinkKilling = false; // indicates player is currently getting DeathLinked
@@ -51,6 +51,7 @@ namespace Archipelago
         public static string Goal = "launch";
         public static string GoalEvent = "";
         public static string SwimRule = "";
+        public static bool EmptyTanks = true;
         public static bool FreeSamples;
         public static bool Silent = false;
         public static Thread TrackerProcessing;
@@ -241,6 +242,10 @@ namespace Archipelago
                 {
                     FreeSamples = Convert.ToInt32(free_samples) > 0;
                 }
+                if (loginSuccess.SlotData.TryGetValue("empty_tanks", out var empty_tanks))
+                {
+                    EmptyTanks = Convert.ToInt32(empty_tanks) > 0;
+                }
                 Goal = (string)loginSuccess.SlotData["goal"];
                 GoalMapping.TryGetValue(Goal, out GoalEvent);
                 if (loginSuccess.SlotData["vanilla_tech"] is JArray temp)
@@ -413,7 +418,7 @@ namespace Archipelago
                 // Unknown item ID or already known technology.
                 return;
             }
-            
+            Logging.Log(techType);
             if (PDAScanner.IsFragment(techType))
             {
                 PDAScanner.EntryData entryData = PDAScanner.GetEntryData(techType);

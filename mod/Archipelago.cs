@@ -8,6 +8,7 @@ using System.Reflection;
 using UnityEngine;
 using Archipelago.MultiClient.Net.Packets;
 using System.Text;
+using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Newtonsoft.Json;
 using File = System.IO.File;
@@ -832,13 +833,17 @@ namespace Archipelago
                 return;
             }
 
-            Oxygen component = item.item.GetComponent<Oxygen>();
-            if (component == null)
+            if (APState.EmptyTanks)
             {
-                return;
+                Oxygen component = item.item.GetComponent<Oxygen>();
+                if (component == null)
+                {
+                    return;
+                }
+                // prevent cheating logic by swapping between oxygen tanks
+                component.RemoveOxygen(component.oxygenCapacity);
             }
-            // prevent cheating logic by swapping between oxygen tanks
-            component.RemoveOxygen(component.oxygenCapacity);
+
         }
     }
     
@@ -992,6 +997,17 @@ namespace Archipelago
             {
                 APState.send_completion();
             }
+        }
+    }
+    // Prevent MultiClient.Net from logging the .Net version to datastore
+    [HarmonyPatch(typeof(ArchipelagoSession))]
+    [HarmonyPatch("LogUsedVersion")]
+    internal class DontLog
+    {
+        [HarmonyPrefix]
+        public static bool NoLog()
+        {
+            return false;
         }
     }
 }
