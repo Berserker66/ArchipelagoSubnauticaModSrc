@@ -418,7 +418,7 @@ namespace Archipelago
                 // Unknown item ID or already known technology.
                 return;
             }
-            Logging.Log(techType);
+
             if (PDAScanner.IsFragment(techType))
             {
                 PDAScanner.EntryData entryData = PDAScanner.GetEntryData(techType);
