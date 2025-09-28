@@ -555,12 +555,11 @@ namespace Archipelago
                 {
                     yield break;
                 }
-                var techData = CraftData.Get(techType, skipWarnings: true);
-                if (techData != null)
+                var techtypes = TechData.GetLinkedItems(techType);
+                if (techtypes != null)
                 {
-                    for (int i = 0; i < techData.linkedItemCount; i++)
+                    foreach (var linkedItem in techtypes)
                     {
-                        var linkedItem = techData.GetLinkedItem(i);
                         yield return PickUp(linkedItem);
                     }
                 }
