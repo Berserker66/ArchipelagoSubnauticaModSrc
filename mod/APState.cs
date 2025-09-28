@@ -38,7 +38,7 @@ namespace Archipelago
             { "infected", "Infection_Progress4" },
         };
         
-        public static int[] AP_VERSION = new int[] { 0, 6, 2 };
+        public static int[] AP_VERSION = new int[] { 0, 6, 3 };
         public static APConnectInfo ServerConnectInfo = new APConnectInfo();
         public static DeathLinkService DeathLinkService = null;
         public static bool DeathLinkKilling = false; // indicates player is currently getting DeathLinked
