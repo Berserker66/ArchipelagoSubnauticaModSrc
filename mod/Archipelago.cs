@@ -95,15 +95,18 @@ namespace Archipelago
                 GUI.Label(new Rect(16, 36, 150, 20), "Host: ");
                 GUI.Label(new Rect(16, 56, 150, 20), "PlayerName: ");
                 GUI.Label(new Rect(16, 76, 150, 20), "Password: ");
+                GUI.Label(new Rect(16, 96, 150, 20), "Game Name: ");
 
                 bool submit = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return;
 
-                APState.ServerConnectInfo.host_name = GUI.TextField(new Rect(150 + 16 + 8, 36, 150, 20), 
+                APState.ServerConnectInfo.host_name = GUI.TextField(new Rect(150 + 16 + 8, 36, 150, 20),
                     APState.ServerConnectInfo.host_name);
-                APState.ServerConnectInfo.slot_name = GUI.TextField(new Rect(150 + 16 + 8, 56, 150, 20), 
+                APState.ServerConnectInfo.slot_name = GUI.TextField(new Rect(150 + 16 + 8, 56, 150, 20),
                     APState.ServerConnectInfo.slot_name);
-                APState.ServerConnectInfo.password = GUI.TextField(new Rect(150 + 16 + 8, 76, 150, 20), 
+                APState.ServerConnectInfo.password = GUI.TextField(new Rect(150 + 16 + 8, 76, 150, 20),
                     APState.ServerConnectInfo.password);
+                APState.ServerConnectInfo.game_name = GUI.TextField(new Rect(150 + 16 + 8, 96, 150, 20),
+                    APState.ServerConnectInfo.game_name);
 
                 if (submit && Event.current.type == EventType.KeyDown)
                 {
@@ -111,7 +114,7 @@ namespace Archipelago
                     submit = false;
                 }
 
-                if ((GUI.Button(new Rect(16, 96, 100, 20), "Connect") || submit) && APState.ServerConnectInfo.Valid)
+                if ((GUI.Button(new Rect(16, 120, 100, 20), "Connect") || submit) && APState.ServerConnectInfo.Valid)
                 {
                     APState.Connect();
                 }
@@ -704,6 +707,47 @@ namespace Archipelago
                         Logging.LogError("archipelago_item_index error: " + e.Message, ingame:false);
                     }
                 }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(MainMenuLoadPanel))]
+    [HarmonyPatch("UpdateLoadButtonState")]
+    internal class MainMenuPanel_ButtonName
+    {
+        [HarmonyPostfix]
+        private static void MainMenuPanel_ButtonAddName(MainMenuLoadButton lb)
+        {
+            string txt = lb.saveGameLengthText.text;
+
+            // Check that we're not overloading something important
+            string[] error_strings = new string[] {
+                "DamagedSavedGame",
+                "IncompatibleChangesetSavedGame",
+                "SlotEmpty"
+            };
+            foreach (string errstr in error_strings)
+            {
+                // It'll be surrounded by color text, so we can't check for equivalence
+                if (txt.Contains(Language.main.Get(errstr)))
+                {
+                    return;
+                }
+            }
+
+            // Get name from archipelago text
+            var storage = PlatformUtils.main.GetServices().GetUserStorage() as UserStoragePC;
+            var rawPath = storage.GetType().GetField("savePath",
+                BindingFlags.NonPublic | BindingFlags.Instance).GetValue(storage);
+            var saveConnectInfo = APLastConnectInfo.LoadFromFile(rawPath + "/" + lb.saveGame + "/archipelago.json");
+            if (saveConnectInfo is null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(saveConnectInfo.game_name))
+            {
+                lb.saveGameLengthText.text = saveConnectInfo.game_name;
             }
         }
     }

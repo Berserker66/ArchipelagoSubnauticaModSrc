@@ -12,6 +12,7 @@ namespace Archipelago
         public void FillFromLastConnect(APLastConnectInfo lastConnectInfo)
         {
             host_name = lastConnectInfo.host_name;
+            game_name = lastConnectInfo.game_name;
             slot_name = lastConnectInfo.slot_name;
             password = lastConnectInfo.password;
         }
@@ -19,6 +20,7 @@ namespace Archipelago
         {
             var lastConnectInfo = new APLastConnectInfo();
             lastConnectInfo.host_name = host_name;
+            lastConnectInfo.game_name = game_name;
             lastConnectInfo.slot_name = slot_name;
             lastConnectInfo.password = password;
             return lastConnectInfo;
