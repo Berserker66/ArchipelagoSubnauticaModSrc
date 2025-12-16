@@ -203,6 +203,12 @@ namespace Archipelago
             }
             
             // Start the archipelago session.
+            ServerConnectInfo.host_name = ServerConnectInfo.host_name.Trim();
+            // If host_name is all digits, assume it's an archipelago.gg port
+            if (ServerConnectInfo.host_name.All(char.IsDigit))
+            {
+                ServerConnectInfo.host_name = $"wss://archipelago.gg:{ServerConnectInfo.host_name}";
+            }
             Session = ArchipelagoSessionFactory.CreateSession(ServerConnectInfo.host_name);
             Session.MessageLog.OnMessageReceived += Session_MessageReceived;
             Session.Socket.ErrorReceived += Session_ErrorReceived;
