@@ -220,6 +220,7 @@ namespace Archipelago
             long closestID;
             long scanCutOff = 33999;
             long maxFish = 7;
+            Vector3 closestPos;
 
 
             Vector3 playerPos;
@@ -250,6 +251,7 @@ namespace Archipelago
                     
                     closestDist = 100000.0f;
                     closestID = -1;
+                    closestPos = new Vector3(0,0,0);
                     foreach (var locID in APState.Session.Locations.AllMissingLocations)
                     {
                         // Check that it's a static location
@@ -266,6 +268,7 @@ namespace Archipelago
                             {
                                 closestDist = dist;
                                 closestID = locID;
+                                closestPos = ArchipelagoData.Locations[locID].Position;
                             }
                         }
                     }
@@ -273,6 +276,7 @@ namespace Archipelago
                     APState.TrackedLocationsCount = trackingCount;
                     APState.TrackedDistance = closestDist;
                     APState.TrackedLocation = closestID;
+                    APState.TrackedPos = closestPos;
                     if (closestID != -1)
                     {
                         APState.TrackedLocationName =

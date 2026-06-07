@@ -67,7 +67,100 @@ namespace Archipelago
             copied_fade -= Time.deltaTime;
         }
 #endif
+        // We need a GameObject because PingInstance doesn't come with a
+        // Transform, which we need, and we can't just new Transform()
+        public PingInstance TrackerPingInstance = null;
+        public GameObject TrackerPingParent = null;
+        public Sprite TrackerSprite;
 
+        void SetUpTrackerPing() {
+            // Set up the PingInstance stuff
+            TrackerPingParent = new GameObject();
+            TrackerPingInstance = TrackerPingParent.AddComponent<PingInstance>();
+
+            // We have to set this to an unused type to get our own custom stuff to work
+            // int picked at random
+            TrackerPingInstance.SetType((PingType)27015);
+            TrackerPingInstance.SetLabel("Wisely done Mr Freeman, but, You're not supposed to be here...");
+            TrackerPingInstance.SetVisible(true);
+            TrackerPingInstance.SetColor(0);
+            
+            TrackerPingInstance.origin = TrackerPingParent.transform;
+            TrackerPingInstance.origin.position = new Vector3(0,0,0);
+            TrackerPingInstance.Initialize();
+        }
+        
+        void CleanUpTrackerPing() {
+            TrackerPingInstance.OnDisable();
+            TrackerPingInstance = null;
+        }
+
+        void SetUpSprites() {
+            TrackerSprite = getSprite("archipelago.png");
+            Debug.Log("Sprites created");
+        }
+
+        public static Sprite getSprite(string sprite) {
+            byte[] archipelagoContent;
+            try
+            {
+                archipelagoContent = File.ReadAllBytes(BepInEx.Paths.PluginPath+"/Archipelago/"+sprite);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Could not read sprite "+sprite+" for archipelago mod\n" + e);
+                return null;
+            }
+
+            Texture2D archipelagoTex = new Texture2D(2, 2);
+            archipelagoTex.LoadImage(archipelagoContent);
+
+
+            return Sprite.Create(archipelagoTex, new Rect(0.0f, 0.0f, archipelagoTex.width, archipelagoTex.height), new Vector2(0.5f, 0.5f));
+        }
+
+        
+        [HarmonyPatch(typeof(uGUI_PingEntry), nameof(uGUI_PingEntry.SetIcon))]
+        class PatchBeaconManagerUI
+        {
+            static void Postfix(uGUI_PingEntry __instance, PingType type)
+            {
+                if(type != (PingType)27015) { return; }
+                __instance.icon.SetForegroundSprite(Instantiate(ArchipelagoUI.getSprite("archipelago.png")));
+            }
+        }
+
+        [HarmonyPatch(typeof(uGUI_PingEntry), nameof(uGUI_PingEntry.Initialize))]
+        class PatchBeaconManagerUIColor
+        {
+            static void Postfix(uGUI_PingEntry __instance, string id, bool visible, PingType type, string name, int colorIndex)
+            {
+                if(type != (PingType)27015) { return; }
+                __instance.gameObject.transform.GetChild(4).gameObject.SetActive(false);
+            }
+        }
+        
+        [HarmonyPatch(typeof(uGUI_Pings), nameof(uGUI_Pings.OnAdd))]
+        class PatchPingFloater
+        {
+            static bool Prefix(uGUI_Pings __instance, PingInstance instance)
+            {
+                if(instance.pingType == (PingType)27015) {
+                    uGUI_Ping uGUI_Ping2 = __instance.poolPings.Get();
+                    uGUI_Ping2.Initialize();
+                    uGUI_Ping2.SetVisible(instance.visible);
+                    uGUI_Ping2.SetColor(PingManager.colorOptions[instance.colorIndex]);
+                    uGUI_Ping2.SetIcon(Instantiate(ArchipelagoUI.getSprite("archipelago.png")));
+                    uGUI_Ping2.SetLabel(instance.GetLabel());
+                    uGUI_Ping2.SetIconAlpha(0f);
+                    uGUI_Ping2.SetTextAlpha(0f);
+                    __instance.pings.Add(instance.Id, uGUI_Ping2);
+                    return false;
+                }
+                return true;
+            }
+        }
+        
         void OnGUI()
         {
             Logging.TryUpdateLog();
@@ -120,17 +213,39 @@ namespace Archipelago
             else if (APState.state == APState.State.InGame && APState.Session != null && Player.main != null)
             {
                 
+                Debug.Assert(TrackerPingInstance != null);
                 if (APState.TrackedLocation != -1 && APState.TrackedMode != TrackerMode.Disabled)
                 {
+                    // NOTE: Comments here relate specifically to the new PingInstance code to help explain
+                    // for the maintainers of the AP mod. They can be removed if deemed redundant.
+                    if (TrackerPingInstance == null) {
+                        SetUpTrackerPing();
+                        SetUpSprites();
+                    }
                     string text = "Locations left: " + APState.TrackedLocationsCount;
+
                     if (APState.TrackedLocation != -1)
                     {
                         text += ". Closest is " + (long)APState.TrackedDistance + " m (" 
                                 + (int)APState.TrackedAngle + "°) away";
                         text += ", named " + APState.TrackedLocationName;
+                        TrackerPingParent.transform.position = APState.TrackedPos;
+                        float trackedLocationDepth = -APState.TrackedPos.y;
+                        float logicalDepth = (TrackerThread.LogicSwimDepth + TrackerThread.LogicVehicleDepth);
+                        int color = trackedLocationDepth >= logicalDepth ? 2 : 3;
+                        TrackerPingInstance.SetColor(color);
+                        string pingText = "[AP] - " + APState.TrackedLocationName;
+                        if(trackedLocationDepth > 0) {
+                            pingText += " ("+(Math.Round(trackedLocationDepth/25)*25)+"m)";
+                        }
+                        TrackerPingInstance.SetLabel(pingText);
                     }
-                    
                     GUI.Label(new Rect(16, 36, 1000, 20), text);
+                }
+                else {
+                    if(TrackerPingInstance != null) {
+                        CleanUpTrackerPing();
+                    }
                 }
 
                 if (APState.TrackedFishCount > 0 && APState.TrackedMode != TrackerMode.Disabled)
@@ -836,7 +951,7 @@ namespace Archipelago
                 {
                     return;
                 }
-                // prevent cheating logic by swapping between oxygen tanks
+                // prevent cheating logic by swTrackerPingInstance between oxygen tanks
                 component.RemoveOxygen(component.oxygenCapacity);
             }
 
